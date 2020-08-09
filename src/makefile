@@ -8,11 +8,11 @@ all: game-sfml
 
 debug: all
 
-game-sfml: main.o 
-	$(CC) $(THREAD) main.o -o game-sfml $(SFML)
+game-sfml: test.o Level/level1.o
+	$(CC) $(THREAD) test.o Level/level1.o -o game-sfml $(SFML)
 
-main.o: main.cpp
-	$(CC) $(THREAD) main.cpp $(SFML)
+test.o: test.cpp
+	$(CC) $(CFLAGS) $(THREAD) test.cpp $(SFML)
 
 clean:
 	\rm *.o game-sfml

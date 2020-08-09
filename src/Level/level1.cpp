@@ -7,8 +7,8 @@
 
 #include "level1.hpp"
 
-#define screen_W 800
-#define screen_H 600
+#define screen_W 1024
+#define screen_H 768
 
 using namespace sf;
 
@@ -33,12 +33,16 @@ void gestion_clavier(Sprite *sprite_perso, Vector2i *anim){
 	}
 	if(sprite_perso->getPosition().x <= 0)
 		sprite_perso->setPosition(Vector2f(0,sprite_perso->getPosition().y));
+    else if(sprite_perso->getPosition().x >= screen_W-32)
+		sprite_perso->setPosition(Vector2f(screen_W-32,sprite_perso->getPosition().y));
 	if(sprite_perso->getPosition().y <= 0)
 		sprite_perso->setPosition(Vector2f(sprite_perso->getPosition().x,0));
+	else if(sprite_perso->getPosition().y >= screen_H-138)
+		sprite_perso->setPosition(Vector2f(sprite_perso->getPosition().x,screen_H-138));
 }
 
 
-int level1::setForm()
+void level1::setForm()
 {
     std::cout << " test " << std::endl;
     cercle.setFillColor(Color(250,250,0));
@@ -55,7 +59,7 @@ int level1::setForm()
     //shape.setFillColor(Color::Green);
 }
 
-int level1::setCaracter()
+void level1::setCaracter()
 {
     if(!perso.loadFromFile("Images/boss.png"))
     {
@@ -67,24 +71,31 @@ int level1::setCaracter()
     anim.y=Down;
 }
 
-int level1::setTexture()
+void level1::setTexture()
 {
-    if(!backgroundTexture.loadFromFile("Images/back1.png"))
+    /*if(!backgroundTexture.loadFromFile("Images/back1.png"))
     {
 		std::cout<< "Err chargement boss.png" << std::endl;
 	}
-	background.setTexture(backgroundTexture);
+	background.setTexture(backgroundTexture);*/
+
+	std::string filename;
+	filename = "Map/map1.txt";
+	map.changeLevel(filename);
 }
 
-int level1::draw()
+void level1::draw()
 {
-    window->draw(background);
+	map.drawMap(1,*window);
+	map.drawMap(2,*window);
+	map.drawMap(3,*window);
+    //window->draw(background);
 	window->draw(cercle);
 	window->draw(rectangle);
 	window->draw(sprite_perso);
 }
 
-int level1::run_event()
+void level1::run_event()
 {
     while (window->pollEvent(event)){
 	if(event.type == Event::Closed)
@@ -117,8 +128,12 @@ int level1::run_event()
 		sprite_perso.setPosition(Vector2f(lpos.x,lpos.y));
 	}
 
+	position.x = sprite_perso.getPosition().x;
+	position.y = sprite_perso.getPosition().y ;
+	std::cout << position.x << " " << position.y << std::endl;
+
     //vue
-    view.reset(FloatRect(0,0,screen_W,screen_H));
+    /*view.reset(FloatRect(0,0,screen_W,screen_H));
 
 	position.x = sprite_perso.getPosition().x + 16 - screen_W/2;
 	position.y = sprite_perso.getPosition().y + 16 - screen_H/2;
@@ -127,6 +142,11 @@ int level1::run_event()
 	    position.x = 0;
 	if(position.y < 0)
 		position.y = 0;
+    if(position.x > screen_H)
+	    position.x = screen_H;
+	if(position.y > screen_W)
+		position.y = screen_W;
+    
 	view.reset(FloatRect(position.x,position.y,screen_W,screen_H));
-	window->setView(view);
+	window->setView(view);*/
 }

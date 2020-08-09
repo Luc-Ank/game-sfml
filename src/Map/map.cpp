@@ -1,0 +1,159 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <unistd.h>
+#include <cmath>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
+#include "map.hpp"
+using namespace sf;
+
+#define screen_W 1024
+#define screen_H 768
+#define nbTile_W 32
+#define nbTile_H 24
+#define Tile_Size 32
+
+Map::Map()
+{
+    if(!tileSetTexture.loadFromFile("Images/tileset.png"))
+    {
+        std::cout << "Err chargement de l'image du tilset" << std::endl;
+    }
+    else
+    {
+        tileSet.setTexture(tileSetTexture);
+    }
+}
+
+void Map::loadMap(std::string filename)
+{
+    std::fstream fin;
+    int x = 0;
+    int y = 0; 
+
+    std::vector<std::vector<int>> lignes;
+    std::vector<int> ligne_data;
+
+    std::stringstream iostr;
+
+    std::string strBuf,strTmp;
+
+    fin.open(filename,std::fstream::in);
+    if(!fin.is_open())
+    {
+        std::cout << "Erreur chargement du fichier " << filename << std::endl;
+    }
+
+    std::cout << "Remplissage vecteur Map" << std::endl;
+    while(!fin.eof())
+    {
+        getline(fin,strBuf);
+        if(!strBuf.size())
+        {
+            continue;
+        }
+        iostr.clear();
+        iostr.str(strBuf);
+        ligne_data.clear();
+
+        while(true)
+        {
+            getline(iostr,strTmp,',');
+            ligne_data.push_back(atoi(strTmp.c_str()));
+            if(!iostr.good()) break;
+        }
+        if(ligne_data.size())
+            lignes.push_back(ligne_data);
+    }
+    fin.close();
+
+    std::cout << "Remplissage tile1" << std::endl;
+
+    for (x=0; x < nbTile_H; x++)
+    {
+        for (y=0; y < nbTile_W; y++)
+        {
+            tile1[x][y] = lignes[x][y];
+        }
+    }
+    std::cout << "Remplissage tile3" << std::endl;
+    for (x=0; x < nbTile_H; x++)
+    {
+        for (y=0; y < nbTile_W; y++)
+        {
+            tile2[x][y] = lignes[x+nbTile_H][y];
+        }
+    }
+    std::cout << "Remplissage tile3" << std::endl;
+    for (x=0; x < nbTile_H; x++)
+    {
+        for (y=0; y < nbTile_W; y++)
+        {
+            tile3[x][y] = lignes[x+nbTile_H*2][y];
+        }
+    }
+    std::cout << "end loadmap " << std::endl;
+}
+
+void Map::drawMap(int layer, RenderWindow &window)
+{
+    int x,y,a,posx,posy;
+
+    if (layer==1)
+    {
+        for (x=0; x < nbTile_H; x++)
+        {
+            for (y=0; y < nbTile_W; y++)
+            {
+                a = tile1[x][y];
+                posx = a % 10 * Tile_Size;
+                posy = a / 10 * Tile_Size;
+
+                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                window.draw(tileSet);
+            }
+        }
+    }
+    else if (layer == 2)
+    {
+        for (x=0; x < nbTile_H; x++)
+        {
+            for (y=0; y < nbTile_W; y++)
+            {
+                a = tile2[x][y];
+                posx = a % 10 * Tile_Size;
+                posy = a / 10 * Tile_Size;
+
+                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                window.draw(tileSet);
+            }
+        }     
+    }
+    else if (layer == 3)
+    {
+        for (x=0; x < nbTile_H; x++)
+        {
+            for (y=0; y < nbTile_W; y++)
+            {
+                a = tile3[x][y];
+                posx = a % 10 * Tile_Size;
+                posy = a / 10 * Tile_Size;
+
+                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                window.draw(tileSet);
+            }
+        }    
+    }
+}
+
+void Map::changeLevel(std::string filename)
+{
+    loadMap(filename);
+}

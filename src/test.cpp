@@ -1,0 +1,37 @@
+#include <iostream>
+#include <unistd.h>
+#include <cmath>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
+#include "Level/level1.hpp"
+
+using namespace sf;
+
+#define screen_W 800
+#define screen_H 600
+
+int main()
+{
+    RenderWindow window;
+    window.create(VideoMode(screen_W,screen_H),"SFML works"); //Style::Fullscreen  no
+	window.setFramerateLimit(60);
+
+    level1 level(&window);
+    std::cout << " Fenetre crée " << std::endl;
+
+    level.setForm();
+    std::cout << " Forme crée " << std::endl;
+    
+    level.setCaracter();
+    level.setTexture();
+
+    while(window.isOpen())
+    {
+        level.run_event();
+        level.draw();
+        window.display();
+	    window.clear();
+    }
+}

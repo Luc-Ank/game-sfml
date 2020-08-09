@@ -8,8 +8,8 @@ all: game-sfml
 
 debug: all
 
-level1.o: level1.cpp level1.hpp
-	$(CC) -shared $(CFLAGS) $(THREAD) level1.cpp $(SFML)
+level1.o: level1.cpp level1.hpp ../Map/map.o
+	$(CC) -shared $(CFLAGS) $(THREAD) map.o level1.cpp  $(SFML)
 
 clean:
 	\rm *.o game-sfml

@@ -5,8 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
-#define screen_W 800
-#define screen_H 600
+#include "../Map/map.hpp"
 
 using namespace sf;
 
@@ -16,11 +15,11 @@ public:
     level1(RenderWindow *Mwindow): 
         window(Mwindow){}
 
-    int setForm();
-    int setTexture();
-    int setCaracter();
-    int draw();
-    int run_event();
+    void setForm();
+    void setTexture();
+    void setCaracter();
+    void draw();
+    void run_event();
 
 protected:
     RenderWindow *window;
@@ -40,4 +39,6 @@ protected:
     Vector2f lpos;
     Vector2f position;
     Vector2i anim;
+
+    Map map;
 };

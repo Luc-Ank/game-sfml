@@ -86,6 +86,7 @@ void level1::setTexture()
 
 void level1::draw()
 {
+	window->clear();
 	map.drawMap(1,*window);
 	map.drawMap(2,*window);
 	map.drawMap(3,*window);
@@ -97,13 +98,16 @@ void level1::draw()
 
 void level1::run_event()
 {
-    while (window->pollEvent(event)){
-	if(event.type == Event::Closed)
-	    window->close();
-	if(event.type == Event::KeyPressed)
-		updateFPS = true;
-	else
-		updateFPS = false;
+    while (window->pollEvent(event))
+	{
+		if(event.type == Event::Closed)
+			window->close();
+		if(event.type == Event::KeyPressed)
+		{
+			updateFPS = true;
+		}
+		else
+			updateFPS = false;
 	}
 	    
 	lpos.x = sprite_perso.getPosition().x;
@@ -128,9 +132,9 @@ void level1::run_event()
 		sprite_perso.setPosition(Vector2f(lpos.x,lpos.y));
 	}
 
-	position.x = sprite_perso.getPosition().x;
+	/*position.x = sprite_perso.getPosition().x;
 	position.y = sprite_perso.getPosition().y ;
-	std::cout << position.x << " " << position.y << std::endl;
+	std::cout << position.x << " " << position.y << std::endl;*/
 
     //vue
     /*view.reset(FloatRect(0,0,screen_W,screen_H));

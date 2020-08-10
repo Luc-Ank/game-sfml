@@ -19,14 +19,25 @@ using namespace sf;
 
 Map::Map()
 {
-    if(!tileSetTexture.loadFromFile("Images/tileset.png"))
+    if(!tileSetTexture1.loadFromFile("Images/tileset1.png"))
     {
-        std::cout << "Err chargement de l'image du tilset" << std::endl;
+        std::cout << "Err chargement de l'image du tilset 1" << std::endl;
     }
     else
     {
-        tileSet.setTexture(tileSetTexture);
+        tileSet1.setTexture(tileSetTexture1);
     }
+    if(!tileSetTexture2.loadFromFile("Images/tileset2.png"))
+    {
+        std::cout << "Err chargement de l'image du tilset 2" << std::endl;
+    }
+    else
+    {
+        tileSet2.setTexture(tileSetTexture2);
+    }   
+
+    currentTileNumber = 0;
+    mapTimerChangeTile = TimeBetween2Tile * 3;
 }
 
 void Map::loadMap(std::string filename)
@@ -103,6 +114,24 @@ void Map::drawMap(int layer, RenderWindow &window)
 {
     int x,y,a,posx,posy;
 
+    if (mapTimerChangeTile <= 0)
+    {
+        if (currentTileNumber == 0)
+        {
+            currentTileNumber = 1;
+            mapTimerChangeTile = TimeBetween2Tile * 3;
+        }
+        else
+        {
+            currentTileNumber = 0;
+            mapTimerChangeTile = TimeBetween2Tile * 3;
+        }
+    }
+    else
+    {
+        mapTimerChangeTile--;
+    }
+
     if (layer==1)
     {
         for (x=0; x < nbTile_H; x++)
@@ -112,10 +141,19 @@ void Map::drawMap(int layer, RenderWindow &window)
                 a = tile1[x][y];
                 posx = a % 10 * Tile_Size;
                 posy = a / 10 * Tile_Size;
-
-                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
-                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
-                window.draw(tileSet);
+                
+                if (currentTileNumber == 0)
+                {
+                    tileSet1.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet1);
+                }
+                /*else
+                {
+                    tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet2);                    
+                }*/
             }
         }
     }
@@ -129,9 +167,18 @@ void Map::drawMap(int layer, RenderWindow &window)
                 posx = a % 10 * Tile_Size;
                 posy = a / 10 * Tile_Size;
 
-                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
-                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
-                window.draw(tileSet);
+                if (currentTileNumber == 0)
+                {
+                    tileSet1.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet1);
+                }
+                /*else
+                {
+                    tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet2);                    
+                }*/
             }
         }     
     }
@@ -145,9 +192,18 @@ void Map::drawMap(int layer, RenderWindow &window)
                 posx = a % 10 * Tile_Size;
                 posy = a / 10 * Tile_Size;
 
-                tileSet.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
-                tileSet.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
-                window.draw(tileSet);
+                if (currentTileNumber == 0)
+                {
+                    tileSet1.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet1);
+                }
+                /*else
+                {
+                    tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet2);                    
+                }*/
             }
         }    
     }

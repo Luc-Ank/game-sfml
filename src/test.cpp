@@ -7,7 +7,6 @@
 
 #include "Level/level1.hpp"
 
-
 using namespace sf;
 
 #define screen_W 1024
@@ -15,6 +14,7 @@ using namespace sf;
 
 int main()
 {
+    Input input;
     RenderWindow window;
     window.create(VideoMode(screen_W,screen_H),"SFML works"); //Style::Fullscreen  no
 	window.setFramerateLimit(60);
@@ -31,7 +31,7 @@ int main()
     while(window.isOpen())
     {
         window.display();
-        level.run_event();
+        level.run_event(input);
         level.draw();
     }
 }

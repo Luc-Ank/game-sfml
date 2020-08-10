@@ -7,10 +7,11 @@
 
 #include "Level/level1.hpp"
 
+
 using namespace sf;
 
-#define screen_W 800
-#define screen_H 600
+#define screen_W 1024
+#define screen_H 768
 
 int main()
 {
@@ -23,15 +24,14 @@ int main()
 
     level.setForm();
     std::cout << " Forme crée " << std::endl;
-    
+
     level.setCaracter();
     level.setTexture();
 
     while(window.isOpen())
     {
+        window.display();
         level.run_event();
         level.draw();
-        window.display();
-	    window.clear();
     }
 }

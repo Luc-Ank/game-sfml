@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
-#include "../Map/map.hpp"
+#include "../Player/player.hpp"
 
 using namespace sf;
 
@@ -19,7 +19,7 @@ public:
     void setTexture();
     void setCaracter();
     void draw();
-    void run_event();
+    void run_event(Input &input);
 
 protected:
     RenderWindow *window;
@@ -41,4 +41,5 @@ protected:
     Vector2i anim;
 
     Map map;
+    Player player;
 };

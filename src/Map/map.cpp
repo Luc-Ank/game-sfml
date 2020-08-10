@@ -40,6 +40,12 @@ Map::Map()
     mapTimerChangeTile = TimeBetween2Tile * 3;
 }
 
+
+int Map::getTileCollision(int x,int y) const 
+{
+    return tile3[x][y];
+}
+
 void Map::loadMap(std::string filename)
 {
     std::fstream fin;

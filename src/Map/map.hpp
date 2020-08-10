@@ -24,6 +24,8 @@ class Map
         void drawMap(int layer, RenderWindow &window);
         void changeLevel(std::string filename);
 
+        int getTileCollision(int x,int y) const;
+
     protected:
         int tile1[nbTile_H][nbTile_W];
         int tile2[nbTile_H][nbTile_W];

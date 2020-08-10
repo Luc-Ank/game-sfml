@@ -33,9 +33,10 @@ class Map
         Sprite tileSet1;
         Texture tileSetTexture2;
         Sprite tileSet2;
+
         int mapTimerChangeTile;
         int currentTileNumber;
 
-        const int TimeBetween2Tile = 60;
-        
+        const int TimeBetween2Tile = 20;
+
 };

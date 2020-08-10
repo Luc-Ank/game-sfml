@@ -34,7 +34,7 @@ Map::Map()
     else
     {
         tileSet2.setTexture(tileSetTexture2);
-    }   
+    } 
 
     currentTileNumber = 0;
     mapTimerChangeTile = TimeBetween2Tile * 3;
@@ -112,7 +112,7 @@ void Map::loadMap(std::string filename)
 
 void Map::drawMap(int layer, RenderWindow &window)
 {
-    int x,y,a,posx,posy;
+    int x,y,a,posx,posy; 
 
     if (mapTimerChangeTile <= 0)
     {
@@ -129,7 +129,7 @@ void Map::drawMap(int layer, RenderWindow &window)
     }
     else
     {
-        mapTimerChangeTile--;
+        mapTimerChangeTile --;
     }
 
     if (layer==1)
@@ -148,12 +148,13 @@ void Map::drawMap(int layer, RenderWindow &window)
                     tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet1);
                 }
-                /*else
+                else
                 {
                     tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
                     tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet2);                    
-                }*/
+                }
+
             }
         }
     }
@@ -173,12 +174,12 @@ void Map::drawMap(int layer, RenderWindow &window)
                     tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet1);
                 }
-                /*else
+                else
                 {
                     tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
                     tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet2);                    
-                }*/
+                }
             }
         }     
     }
@@ -198,12 +199,12 @@ void Map::drawMap(int layer, RenderWindow &window)
                     tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet1);
                 }
-                /*else
+                else
                 {
                     tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
                     tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
                     window.draw(tileSet2);                    
-                }*/
+                }
             }
         }    
     }

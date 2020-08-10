@@ -30,9 +30,8 @@ int main()
 
     while(window.isOpen())
     {
+        window.display();
         level.run_event();
         level.draw();
-        window.display();
-	    window.clear();
     }
 }

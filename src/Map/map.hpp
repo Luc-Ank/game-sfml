@@ -29,6 +29,13 @@ class Map
         int tile2[nbTile_H][nbTile_W];
         int tile3[nbTile_H][nbTile_W];
 
-        Texture tileSetTexture;
-        Sprite tileSet;
+        Texture tileSetTexture1;
+        Sprite tileSet1;
+        Texture tileSetTexture2;
+        Sprite tileSet2;
+        int mapTimerChangeTile;
+        int currentTileNumber;
+
+        const int TimeBetween2Tile = 60;
+        
 };

@@ -1,5 +1,6 @@
 #include "input.hpp"
 
+
 using namespace sf;
 
 Input::Input()
@@ -7,7 +8,6 @@ Input::Input()
     button.left = button.right = button.up = button.down = button.run = button.attack = false;
     button.enter = button.protect = false;
 }
-
 
 Input::Button Input::getButton(void) const {return button;}
 

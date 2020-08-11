@@ -1,3 +1,4 @@
 game-sfml
 *.o
 *.out
+build*/

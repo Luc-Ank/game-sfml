@@ -47,8 +47,8 @@ void level1::draw()
 	map.drawMap(1,*window);
 	map.drawMap(2,*window);
 	map.drawMap(3,*window);
+	map.drawMap(4,*window);
 	player.drawPlayer(*window);
-    //window->draw(background);
 	window->draw(cercle);
 	window->draw(rectangle);
 	window->draw(sprite_perso);

@@ -72,5 +72,6 @@ class Player
         enum{up,down,right,left,attack,run,enter,protect};
 
         const int MUR1 = 42;
-
+        const int breakMUR1 = 282;
+        const int breakMUR2 = 288;
 };

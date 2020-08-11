@@ -102,8 +102,8 @@ void Player::drawPlayer(RenderWindow &window)
     {
         playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
         (playerDirection)*playerH,
-        playerH,playerW));  
-        window.draw(playerSprite);       
+        playerH,playerW));
+        window.draw(playerSprite);    
     }
 }
 
@@ -269,6 +269,20 @@ void Player::playerMapCollision(Map & map)
                     playerX -= (playerW+1);
                     ghostPlayerX = 0;
                 }
+                else if (map.getTileBreak(y2,x2) == breakMUR1 || map.getTileBreak(y2,x2) == breakMUR2)
+                {
+                    playerX = x2*Tile_Size;
+                    playerX -= (playerW+1);
+                    ghostPlayerX = 0;
+                    map.setLifeTileBreak(y2,x2, map.getLifeTileBreak(y2,x2)-1 );
+                }
+                else if (map.getTileBreak(y1,x2) == breakMUR2 || map.getTileBreak(y1,x2) == breakMUR2)
+                {
+                    playerX = x2*Tile_Size;
+                    playerX -= (playerW+1);
+                    ghostPlayerX = 0;
+                    map.setLifeTileBreak(y1,x2, map.getLifeTileBreak(y1,x2)-1 );                    
+                }
             }
             else if(ghostPlayerX < 0)
             {
@@ -279,8 +293,21 @@ void Player::playerMapCollision(Map & map)
                     playerX = (x1+1)*Tile_Size;
                     ghostPlayerX = 0;
                 }
+                else if (map.getTileBreak(y1,x1) == breakMUR1 || map.getTileBreak(y1,x1) == breakMUR2)
+                {
+                    playerX = (x1+1)*Tile_Size;
+                    ghostPlayerX = 0;
+                    map.setLifeTileBreak(y1,x1, map.getLifeTileBreak(y1,x1)-1 );   
+                }
+                else if (map.getTileBreak(y2,x1) == breakMUR1 || map.getTileBreak(y2,x1) == breakMUR2)
+                {
+                    playerX = (x1+1)*Tile_Size;
+                    ghostPlayerX = 0;
+                    map.setLifeTileBreak(y2,x1, map.getLifeTileBreak(y2,x1)-1 );   
+                }
             }            
         }
+        
         if(i==playerH)
         {
             break;
@@ -321,6 +348,20 @@ void Player::playerMapCollision(Map & map)
                     playerY -= (playerH+1);
                     ghostPlayerY = 0;
                 }
+                else if(map.getTileBreak(y2,x1) == breakMUR1 || map.getTileBreak(y2,x1) == breakMUR2)
+                {
+                    playerY = y2*Tile_Size;
+                    playerY -= (playerH+1);
+                    ghostPlayerY = 0;
+                    map.setLifeTileBreak(y2,x1, map.getLifeTileBreak(y2,x1)-1 );
+                }
+                else if(map.getTileBreak(y2,x2) == breakMUR1 || map.getTileBreak(y2,x2) == breakMUR2)
+                {
+                    playerY = y2*Tile_Size;
+                    playerY -= (playerH+1);
+                    ghostPlayerY = 0;
+                    map.setLifeTileBreak(y2,x2, map.getLifeTileBreak(y2,x2)-1 );
+                }
             }
             else if(ghostPlayerY < 0)
             {
@@ -330,6 +371,18 @@ void Player::playerMapCollision(Map & map)
                 {
                     playerY = (y1+1)*Tile_Size;
                     ghostPlayerY = 0;
+                }
+                else if(map.getTileBreak(y1,x1) == breakMUR1 || map.getTileBreak(y1,x1) == breakMUR2)
+                {
+                    playerY = (y1+1)*Tile_Size;
+                    ghostPlayerY = 0;
+                    map.setLifeTileBreak(y1,x1, map.getLifeTileBreak(y1,x1)-1 );
+                }
+                else if(map.getTileBreak(y1,x2) == breakMUR1 || map.getTileBreak(y1,x2) == breakMUR2)
+                {
+                    playerY = (y1+1)*Tile_Size;
+                    ghostPlayerY = 0;
+                    map.setLifeTileBreak(y1,x2, map.getLifeTileBreak(y1,x2)-1 );
                 }
             }            
         }

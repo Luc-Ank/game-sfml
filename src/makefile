@@ -8,7 +8,7 @@ all: game-sfml
 
 debug: all
 
-game-sfml: test.o Map/map.o Level/level1.o Map/map1.txt Input/input.o Player/player.o
+game-sfml: test.o Level/level1.o 
 	$(CC) $(THREAD) test.o Map/map.o Level/level1.o Input/input.o Player/player.o -o game-sfml $(SFML)
 
 test.o: test.cpp

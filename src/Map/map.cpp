@@ -41,9 +41,22 @@ Map::Map()
 }
 
 
-int Map::getTileCollision(int x,int y) const 
-{
-    return tile3[x][y];
+int Map::getTileCollision(int x,int y) const { return tile3[x][y]; }
+int Map::getTileBreak(int x,int y) const { return tile4[x][y]; }
+int Map::getLifeTileBreak(int x,int y) const { return lifeTile4[x][y]; }
+
+void Map::setTileBreak(int x,int y, int valeur) { tile4[x][y] = valeur; }
+void Map::setLifeTileBreak(int x,int y, int valeur)
+{ 
+    lifeTile4[x][y] = valeur; 
+    if (lifeTile4[x][y] == 50)
+    {
+        tile4[x][y] = 288;
+    }
+    if (lifeTile4[x][y] == 0)
+    {
+        tile4[x][y] = 0;
+    }
 }
 
 void Map::loadMap(std::string filename)
@@ -89,7 +102,6 @@ void Map::loadMap(std::string filename)
     fin.close();
 
     std::cout << "Remplissage tile1" << std::endl;
-
     for (x=0; x < nbTile_H; x++)
     {
         for (y=0; y < nbTile_W; y++)
@@ -97,7 +109,7 @@ void Map::loadMap(std::string filename)
             tile1[x][y] = lignes[x][y];
         }
     }
-    std::cout << "Remplissage tile3" << std::endl;
+    std::cout << "Remplissage tile2" << std::endl;
     for (x=0; x < nbTile_H; x++)
     {
         for (y=0; y < nbTile_W; y++)
@@ -111,6 +123,22 @@ void Map::loadMap(std::string filename)
         for (y=0; y < nbTile_W; y++)
         {
             tile3[x][y] = lignes[x+nbTile_H*2][y];
+        }
+    }
+    std::cout << "Remplissage tile4" << std::endl;
+    for (x=0; x < nbTile_H; x++)
+    {
+        for (y=0; y < nbTile_W; y++)
+        {
+            tile4[x][y] = lignes[x+nbTile_H*3][y];
+        }
+    }
+    std::cout << "Remplissage lifeTile4" << std::endl;
+    for (x=0; x < nbTile_H; x++)
+    {
+        for (y=0; y < nbTile_W; y++)
+        {
+            lifeTile4[x][y] = lignes[x+nbTile_H*4][y];
         }
     }
     std::cout << "end loadmap " << std::endl;
@@ -214,7 +242,33 @@ void Map::drawMap(int layer, RenderWindow &window)
             }
         }    
     }
+    else if (layer == 4)
+    {
+        for (x=0; x < nbTile_H; x++)
+        {
+            for (y=0; y < nbTile_W; y++)
+            {
+                a = tile4[x][y];
+                posx = a % 10 * Tile_Size;
+                posy = a / 10 * Tile_Size;
+
+                if (currentTileNumber == 0)
+                {
+                    tileSet1.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet1.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet1);
+                }
+                else
+                {
+                    tileSet2.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+                    tileSet2.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+                    window.draw(tileSet2);                    
+                }
+            }
+        }    
+    }
 }
+
 
 void Map::changeLevel(std::string filename)
 {

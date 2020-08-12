@@ -17,6 +17,7 @@ using namespace sf;
 #define nbTile_H 24
 #define Tile_Size 32
 
+
 Map::Map()
 {
     if(!tileSetTexture1.loadFromFile("Images/tileset1.png"))
@@ -268,6 +269,7 @@ void Map::drawMap(int layer, RenderWindow &window)
         }    
     }
 }
+
 
 
 void Map::changeLevel(std::string filename)

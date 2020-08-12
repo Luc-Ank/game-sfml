@@ -12,6 +12,10 @@
 
 using namespace sf;
 
+std::vector<std::string> action = {"down","right","up","left"};
+int i,j,k = 0;
+int rand_action;
+
 void level1::setForm()
 {
     std::cout << " test " << std::endl;
@@ -34,6 +38,11 @@ void level1::setCaracter()
 	player.initPlayer();
 }
 
+void level1::setMonster()
+{
+	monster.initMonster(256,256);
+}
+
 void level1::setTexture()
 {
 	std::string filename;
@@ -49,6 +58,7 @@ void level1::draw()
 	map.drawMap(3,*window);
 	map.drawMap(4,*window);
 	player.drawPlayer(*window);
+	monster.drawMonster(*window);
 	window->draw(cercle);
 	window->draw(rectangle);
 	window->draw(sprite_perso);
@@ -58,4 +68,25 @@ void level1::run_event(Input &input)
 {
 	input.gestionInputs(*window);
 	player.updatePlayer(input, map);
+	if (i == 10)
+	{
+		i = 0;
+		if(k == 2)
+		{
+			k = 0;
+			j++;
+			monster.updateMonster(action[j%4],map);			
+		}
+		else
+		{
+			k++;
+			monster.updateMonster(action[j%4],map);
+		}
+	}
+	else
+	{
+		i++;
+		monster.updateMonster(action[j%4],map);
+	}
+	
 }

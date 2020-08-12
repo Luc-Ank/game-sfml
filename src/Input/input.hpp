@@ -1,3 +1,6 @@
+#ifndef INPUT_H
+#define INPUT_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -36,3 +39,4 @@ class Input
 
         enum{up,down,right,left,attack,run,enter,protect};
 };
+#endif

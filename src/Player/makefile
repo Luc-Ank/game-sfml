@@ -4,9 +4,9 @@ DEBUG = -Wall -Werror -Wextra
 THREAD = -pthread
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
-all: level1.o
+all: player.o
 
-level1.o: player.cpp player.hpp ../Input/input.o
+player.o: player.cpp player.hpp ../Input/input.o ../Monster/monster.o ../Map/map.o
 	$(CC) -shared $(CFLAGS) $(THREAD)  player.cpp  $(SFML)
 
 clean:

@@ -2,25 +2,32 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <thread>
+#include <mutex>
 
 
-#include "lvl-editor/levelWindow.h"
-#include "lvl-editor/tileWindow.h"
+#include "lvl-editor/Window.h"
+
 
 
 int main (int argc, char ** argv)
 {
-	if (argc != 2)
+	if (argc != 3)
 	{
-		std::cerr << "usage : " << argv[0] << " tile-file" << std::endl ;
+		std::cerr << "usage : " << argv[0] << " level-filename tile-file" << std::endl ;
 		exit( 1 );
 	}
 
-	sf::RenderWindow levelWindow, tileWindow;
+	sf::RenderWindow levelRenderWindow, tileRenderWindow;
 
-	// handle the level window
+	Window win( &levelRenderWindow, &tileRenderWindow, argv[1], argv[2] );
+
+	// handle the window
+	std::thread thread_disp( &Window::Run, &win );
  
-	// handle the tile window
+
+
+	// wait for threads to finish
+	thread_disp.join() ;
 
 	return 0 ;
 }

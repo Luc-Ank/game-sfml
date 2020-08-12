@@ -1,3 +1,6 @@
+#ifndef MAP_H
+#define MAP_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -50,3 +53,4 @@ class Map
         const int TimeBetween2Tile = 20;
 
 };
+#endif

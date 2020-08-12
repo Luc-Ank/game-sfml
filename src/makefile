@@ -4,7 +4,7 @@ DEBUG = -Wall -Werror -Wextra
 THREAD = -pthread
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
-all: game-sfml
+all: game-sfml level-editor
 
 debug: all
 
@@ -16,6 +16,13 @@ test.o: test.cpp Level/level1.o
 
 clean:
 	\rm *.o game-sfml
+
+level-editor: level-editor.o lvl-editor/levelWindow.o lvl-editor/tileWindow.o
+	$(CC) $(THREAD) level-editor.o lvl-editor/levelWindow.o lvl-editor/tileWindow.o -o level-editor $(SFML)
+
+level-editor.o: level-editor.cpp
+	$(CC) $(THREAD) $(SFML) $(CFLAGS) level-editor.cpp
+
 
 run: all
 run:

@@ -1,4 +1,5 @@
 game-sfml
+level-editor
 *.o
 *.out
 build*/

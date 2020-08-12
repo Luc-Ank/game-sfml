@@ -17,6 +17,8 @@ using namespace sf;
 #define nbTile_H 24
 #define Tile_Size 32
 
+#define playerHW 32
+
 Player::Player()
 {
     if(!playerTexture.loadFromFile("Images/boss.png"))

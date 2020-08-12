@@ -26,6 +26,7 @@ int main()
     std::cout << " Forme crée " << std::endl;
 
     level.setCaracter();
+    level.setMonster();
     level.setTexture();
 
     while(window.isOpen())

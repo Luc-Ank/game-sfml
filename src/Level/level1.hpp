@@ -1,3 +1,6 @@
+#ifndef LEVEL1_H
+#define LEVEL1_H
+
 #include <iostream>
 #include <unistd.h>
 #include <cmath>
@@ -6,6 +9,9 @@
 #include <SFML/System.hpp>
 
 #include "../Player/player.hpp"
+#include "../Monster/monster.hpp"
+#include "../Map/map.hpp"
+#include "../Input/input.hpp"
 
 using namespace sf;
 
@@ -18,6 +24,7 @@ public:
     void setForm();
     void setTexture();
     void setCaracter();
+    void setMonster();
     void draw();
     void run_event(Input &input);
 
@@ -42,4 +49,6 @@ protected:
 
     Map map;
     Player player;
+    Monster monster;
 };
+#endif

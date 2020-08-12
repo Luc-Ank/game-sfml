@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,6 +13,7 @@
 
 #include "../Input/input.hpp"
 #include "../Map/map.hpp"
+#include "../Monster/monster.hpp"
 
 using namespace sf;
 
@@ -75,3 +79,5 @@ class Player
         const int breakMUR1 = 282;
         const int breakMUR2 = 288;
 };
+
+#endif

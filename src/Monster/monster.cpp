@@ -37,6 +37,16 @@ Monster::Monster()
     monsterDirection = 0;
 }
 
+int Monster::getMonsterH(void) const { return monsterH; }
+int Monster::getMonsterW(void) const { return monsterW; }
+int Monster::getMonsterX(void) const { return monsterX; }
+int Monster::getMonsterY(void) const { return monsterY; }
+int Monster::getGhostMonsterX(void) const { return ghostMonsterX; }
+int Monster::getGhostMonsterY(void) const { return ghostMonsterY; }
+Sprite Monster::getMonsterSprite(void) const { return monsterSprite; }
+
+void Monster::setMonsterStand(int valeur){ monsterStand = valeur; }
+
 void Monster::drawMonster(RenderWindow &window)
 {
     if (monsterFrameTimer <= 0)
@@ -83,6 +93,8 @@ void Monster::initMonster(int x, int y)
     monsterY = y;
     monsterH = MONSTERH;
     monsterW = MONSTERW;
+
+    monsterStand = 1;
     
     monsterIsAttacking = 0;
 }
@@ -221,77 +233,91 @@ void Monster::monsterMapCollision(Map & map)
 
 void Monster::updateMonster(std::string action, Map &map)
 {
-    ghostMonsterX = 0;
-    ghostMonsterY = 0;
+    if (monsterStand)
+    {
+        ghostMonsterX = 0;
+        ghostMonsterY = 0;
 
-    if(action == "run")
-        monsterIsRunning = 5;
+        if(action == "run")
+            monsterIsRunning = 5;
+        else
+            monsterIsRunning = 0;
+
+        if(action == "left")
+        {
+            ghostMonsterX -= monsterSpeed + monsterIsRunning;
+            monsterDirection = monsterLEFT;
+
+            if(monsterEtat != monsterWALK)
+            {
+                monsterEtat = monsterWALK;
+                monsterFrameNumber = 0;
+                monsterFrameTimer = TimeBetween2FrameMonster;
+                monsterFrameMax = MONSTER_FRAME_MAX;
+            }
+        }
+        else if(action == "right")
+        {
+            ghostMonsterX += monsterSpeed + monsterIsRunning;
+            monsterDirection = monsterRIGHT;
+
+            if(monsterEtat != monsterWALK)
+            {
+                monsterEtat = monsterWALK;
+                monsterFrameNumber = 0;
+                monsterFrameTimer = TimeBetween2FrameMonster;
+                monsterFrameMax = MONSTER_FRAME_MAX;
+            }
+        }
+        else if(action == "up")
+        {
+            ghostMonsterY -= monsterSpeed + monsterIsRunning;
+            monsterDirection = monsterUP;
+
+            if(monsterEtat != monsterWALK)
+            {
+                monsterEtat = monsterWALK;
+                monsterFrameNumber = 0;
+                monsterFrameTimer = TimeBetween2FrameMonster;
+                monsterFrameMax = MONSTER_FRAME_MAX;
+            }
+        }
+        else if(action == "down")
+        {
+            ghostMonsterY += monsterSpeed + monsterIsRunning;
+            monsterDirection = monsterDOWN;
+
+            if(monsterEtat != monsterWALK)
+            {
+                monsterEtat = monsterWALK;
+                monsterFrameNumber = 0;
+                monsterFrameTimer = TimeBetween2FrameMonster;
+                monsterFrameMax = MONSTER_FRAME_MAX;
+            }
+        }         
+        else if(action != "down" && action != "up" &&
+                action != "left" == false && action != "right")
+        {
+            if (monsterEtat != IDLE)
+            {
+                monsterEtat = IDLE;
+                monsterFrameNumber = 0;
+                monsterFrameTimer = TimeBetween2FrameMonster;
+                monsterFrameMax = 3;
+            }
+        }
+        monsterMapCollision(map);
+    }
     else
-        monsterIsRunning = 0;
-
-    if(action == "left")
     {
-        ghostMonsterX -= monsterSpeed + monsterIsRunning;
-        monsterDirection = monsterLEFT;
-
-        if(monsterEtat != monsterWALK)
-        {
-            monsterEtat = monsterWALK;
-            monsterFrameNumber = 0;
-            monsterFrameTimer = TimeBetween2FrameMonster;
-            monsterFrameMax = MONSTER_FRAME_MAX;
-        }
-    }
-    else if(action == "right")
-    {
-        ghostMonsterX += monsterSpeed + monsterIsRunning;
-        monsterDirection = monsterRIGHT;
-
-        if(monsterEtat != monsterWALK)
-        {
-            monsterEtat = monsterWALK;
-            monsterFrameNumber = 0;
-            monsterFrameTimer = TimeBetween2FrameMonster;
-            monsterFrameMax = MONSTER_FRAME_MAX;
-        }
-    }
-    else if(action == "up")
-    {
-        ghostMonsterY -= monsterSpeed + monsterIsRunning;
-        monsterDirection = monsterUP;
-
-        if(monsterEtat != monsterWALK)
-        {
-            monsterEtat = monsterWALK;
-            monsterFrameNumber = 0;
-            monsterFrameTimer = TimeBetween2FrameMonster;
-            monsterFrameMax = MONSTER_FRAME_MAX;
-        }
-    }
-    else if(action == "down")
-    {
-        ghostMonsterY += monsterSpeed + monsterIsRunning;
-        monsterDirection = monsterDOWN;
-
-        if(monsterEtat != monsterWALK)
-        {
-            monsterEtat = monsterWALK;
-            monsterFrameNumber = 0;
-            monsterFrameTimer = TimeBetween2FrameMonster;
-            monsterFrameMax = MONSTER_FRAME_MAX;
-        }
-    }         
-    else if(action != "down" && action != "up" &&
-            action != "left" == false && action != "right")
-    {
+        ghostMonsterX = 0;
+        ghostMonsterY = 0;
         if (monsterEtat != IDLE)
         {
             monsterEtat = IDLE;
             monsterFrameNumber = 0;
             monsterFrameTimer = TimeBetween2FrameMonster;
             monsterFrameMax = 3;
-        }
+        }    
     }
-
-    monsterMapCollision(map);
 }

@@ -22,12 +22,8 @@ int main (int argc, char ** argv)
 	LEWindow win( &levelRenderWindow, &tileRenderWindow, argv[1], argv[2] );
 
 	// handle the window
-	std::thread thread_disp( &LEWindow::Run, &win );
- 
+	win.Run();
 
-
-	// wait for threads to finish
-	thread_disp.join() ;
 
 	return 0 ;
 }

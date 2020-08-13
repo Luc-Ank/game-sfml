@@ -13,7 +13,7 @@
 using namespace sf;
 
 std::vector<std::string> action = {"down","right","up","left"};
-int i,j,k = 0;
+int i,j,m,n = 0;
 int rand_action;
 
 void level1::setForm()
@@ -40,7 +40,9 @@ void level1::setCaracter()
 
 void level1::setMonster()
 {
-	monster.initMonster(256,256);
+	monster[0].initMonster(224,288);
+	monster[1].initMonster(512,224);
+	monster[2].initMonster(288,32);
 }
 
 void level1::setTexture()
@@ -58,7 +60,9 @@ void level1::draw()
 	map.drawMap(3,*window);
 	map.drawMap(4,*window);
 	player.drawPlayer(*window);
-	monster.drawMonster(*window);
+	monster[0].drawMonster(*window);
+	monster[1].drawMonster(*window);
+	monster[2].drawMonster(*window);
 	window->draw(cercle);
 	window->draw(rectangle);
 	window->draw(sprite_perso);
@@ -66,27 +70,40 @@ void level1::draw()
 
 void level1::run_event(Input &input)
 {
+	int monsterNumber = 3;
 	input.gestionInputs(*window);
-	player.updatePlayer(input, map);
-	if (i == 10)
+	player.updatePlayer(input, map,monster,monsterNumber);
+	monster[0].updateMonster("nul",map);
+	if (i==0)
 	{
-		i = 0;
-		if(k == 2)
+		monster[1].updateMonster("right",map);
+		if(monster[1].getMonsterX() > 768)
 		{
-			k = 0;
-			j++;
-			monster.updateMonster(action[j%4],map);			
-		}
-		else
-		{
-			k++;
-			monster.updateMonster(action[j%4],map);
+			i = 1;
 		}
 	}
 	else
 	{
-		i++;
-		monster.updateMonster(action[j%4],map);
+		monster[1].updateMonster("left",map);
+		if(monster[1].getMonsterX() < 512)
+		{
+			i = 0;
+		}		
 	}
-	
+	if (j==0)
+	{
+		monster[2].updateMonster("down",map);
+		if(monster[2].getMonsterY() > 256)
+		{
+			j = 1;
+		}
+	}
+	else
+	{
+		monster[2].updateMonster("up",map);
+		if(monster[2].getMonsterY() < 32)
+		{
+			j = 0;
+		}		
+	}			
 }

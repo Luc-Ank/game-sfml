@@ -34,6 +34,8 @@ class Player
         void playerMapCollision(Map &map);
         void playerMonsterCollision(Monster monster[], Input input, int monsterNumber);
 
+        Sprite getPlayerSprite(void) const;
+
     protected:
         int life;
         int invincibleTimer;
@@ -71,10 +73,10 @@ class Player
         const int playerWALK = 1;
         const int playerDEAD = 4;
 
-        const int playerDOWN = 0;
-        const int playerLEFT = 1;
-        const int playerRIGHT = 2;
-        const int playerUP = 3;
+        const int playerUP = 1;
+        const int playerLEFT = 2;
+        const int playerDOWN = 3;
+        const int playerRIGHT = 4;
 
         enum{up,down,right,left,attack,run,enter,protect};
 

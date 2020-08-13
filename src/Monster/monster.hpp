@@ -31,6 +31,17 @@ class Monster
         //void playerCenterScrolling(Map &map);
         void monsterMapCollision(Map &map);
 
+        int getMonsterH(void) const;
+        int getMonsterW(void) const;
+        int getMonsterX(void) const;
+        int getMonsterY(void) const;
+        int getGhostMonsterX(void) const;
+        int getGhostMonsterY(void) const;
+        bool getMonsterStand(void) const;
+        Sprite getMonsterSprite(void) const;
+
+        void setMonsterStand(int valeur);
+
     protected:
         int life;
 
@@ -43,6 +54,8 @@ class Monster
 
         int ghostMonsterX,ghostMonsterY;
         int prevMonsterX,prevMonsterY;
+
+        int monsterStand;
 
         Texture monsterTexture;
         Sprite monsterSprite;

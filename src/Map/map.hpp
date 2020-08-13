@@ -26,6 +26,7 @@ class Map
         void loadMap(std::string filename, bool life=true);
         void drawMap(int layer, RenderWindow &window);
         void changeLevel(std::string filename);
+        void saveLevel(std::string const filename) const;
 
         int getTileCollision(int x,int y) const;
 

@@ -13,22 +13,37 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 
+	if (!tileTexture_.loadFromFile( til_filename() ))
+	{
+		std::cerr << "raler" << std::endl ;
+		exit( 1 );
+	}
+	tileSprite_.setTexture( tileTexture_ );
+	tileSprite_.setPosition( 0.f, 0.f );
+
 	// test if the level file doesn't exist
 	if ( (access( file.c_str(), R_OK|W_OK )) == -1)
 	{
 		// if so, we create it, empty
 		std::ofstream empty_level( file, std::ios::out) ;
-		for (int l=0; l<4; l++)
+		if (empty_level)
 		{
-			for (int y=0; y<nbTile_H; y++)
+			for (int l=0; l<4; l++)
 			{
-				for (int x=0; x<nbTile_W-1; x++)
+				for (int y=0; y<nbTile_H; y++)
 				{
-					empty_level << "1," ;
+					for (int x=0; x<nbTile_W-1; x++)
+					{
+						empty_level << "1," ;
+					}
+					empty_level << "0" << std::endl ;
 				}
-				empty_level << "0" << std::endl ;
+				empty_level << std::endl ;
 			}
-			empty_level << std::endl ;
+		} else
+		{
+			std::cerr << "Fail to open " << file << std::endl ;
+			exit( 0 );
 		}
 	}
 
@@ -50,16 +65,7 @@ std::string LEWindow::til_filename() const
 
 void LEWindow::image_draw() const
 {
-	sf::Texture text ;
-	if (!text.loadFromFile( til_filename() ))
-	{
-		std::cerr << "raler" << std::endl ;
-		exit( 1 );
-	}
-	sf::Sprite sprite ;
-	sprite.setTexture( text );
-	sprite.setPosition( 0.f, 0.f );
-	TilWindow_->draw( sprite );
+	TilWindow_->draw( tileSprite_ );
 }
 
 
@@ -84,19 +90,11 @@ void LEWindow::Run()
 		sf::Event event;
 		while (LvlWindow_->pollEvent( event ))
 		{
-			if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
-				|| (event.type == sf::Event::Closed) )
-			{
-				close_windows();
-			}
+			seekKeyEvent( event );
 		}
 		while (TilWindow_->pollEvent( event ))
 		{
-			if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
-				|| (event.type == sf::Event::Closed) )
-			{
-				close_windows();
-			}
+			seekKeyEvent( event );
 		}
 
 		LvlWindow_->clear( sf::Color::Black );
@@ -109,5 +107,18 @@ void LEWindow::Run()
 		LvlWindow_->display();
 		TilWindow_->display();
 
+	}
+}
+
+
+void LEWindow::seekKeyEvent(sf::Event event)
+{
+	if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
+				|| (event.type == sf::Event::Closed) )
+	{
+		close_windows();
+	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
+	{
+		map_.saveLevel( "level.txt" );
 	}
 }

@@ -279,3 +279,50 @@ void Map::changeLevel(std::string filename)
 {
     loadMap(filename);
 }
+
+
+
+void Map::saveLevel(std::string const filename) const
+{
+    std::ofstream flux_level( filename, std::ios::out) ;
+    if (!flux_level)
+    {
+        std::cerr << "Fail to create " << filename << std::endl ;
+        exit( 1 );
+    } else
+    {
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile1[y][x] << "," ;
+            }
+            flux_level << tile1[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile2[y][x] << "," ;
+            }
+            flux_level << tile2[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile3[y][x] << "," ;
+            }
+            flux_level << tile3[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile4[y][x] << "," ;
+            }
+            flux_level << tile4[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        std::cout << "Level saved in " << filename << std::endl ;
+    }
+}

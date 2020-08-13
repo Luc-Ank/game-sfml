@@ -31,10 +31,13 @@ public:
 
 	// Run the application
 	void Run();
+	void seekKeyEvent(sf::Event) ;
 
 private:
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
+	sf::Texture tileTexture_ ;
+	sf::Sprite  tileSprite_; 
 	Map map_ ;
 };
 

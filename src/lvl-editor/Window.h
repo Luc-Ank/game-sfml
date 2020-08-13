@@ -23,6 +23,10 @@ public:
 	// Accessors
 	std::string lvl_filename() const;
 	std::string til_filename() const;
+	int currentLayer() const;
+
+	// Mutators
+	void setCurrentLayer(int);
 
 	// Draw the tile set on the window
 	void image_draw() const;
@@ -36,6 +40,7 @@ public:
 private:
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
+	int currentLayer_ ;
 	sf::Texture tileTexture_ ;
 	sf::Sprite  tileSprite_; 
 	Map map_ ;

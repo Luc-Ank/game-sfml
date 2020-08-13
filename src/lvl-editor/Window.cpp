@@ -6,7 +6,8 @@
 LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 			   const std::string file, const std::string til):
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
-	lvl_filename_(file), til_filename_(til)
+	lvl_filename_(file), til_filename_(til),
+	currentLayer_(0)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor" );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector" );
@@ -34,7 +35,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 				{
 					for (int x=0; x<nbTile_W-1; x++)
 					{
-						empty_level << "1," ;
+						empty_level << "0," ;
 					}
 					empty_level << "0" << std::endl ;
 				}
@@ -50,17 +51,22 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	map_.loadMap( file, false );
 }
 
-std::string LEWindow::lvl_filename() const
+std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
+std::string LEWindow::til_filename() const { return til_filename_ ; }
+int LEWindow::currentLayer() const { return currentLayer_ ; }
+
+
+void LEWindow::setCurrentLayer (int i)
 {
-	return lvl_filename_ ;
+	if (i==1 || i==2 || i==3 || i==4 )
+	{
+		std::cout << "Current layer is now " << i << std::endl ;
+		currentLayer_ = i - 1 ;
+	} else
+	{
+		std::cout << "Bad value for layer (" << i << ")" << std::endl ;
+	}
 }
-
-std::string LEWindow::til_filename() const
-{
-	return til_filename_ ;
-}
-
-
 
 
 void LEWindow::image_draw() const
@@ -119,6 +125,18 @@ void LEWindow::seekKeyEvent(sf::Event event)
 		close_windows();
 	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
 	{
-		map_.saveLevel( "level.txt" );
+		map_.saveLevel( lvl_filename() );
+	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F1)
+	{
+		setCurrentLayer( 1 );
+	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F2)
+	{
+		setCurrentLayer( 2 );
+	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F3)
+	{
+		setCurrentLayer( 3 );
+	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F4)
+	{
+		setCurrentLayer( 4 );
 	}
 }

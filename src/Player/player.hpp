@@ -29,9 +29,10 @@ class Player
 
         void drawPlayer(RenderWindow &window);
         void initPlayer(); 
-        void updatePlayer(Input &input, Map &map);
+        void updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber);
         void playerCenterScrolling(Map &map);
         void playerMapCollision(Map &map);
+        void playerMonsterCollision(Monster monster[], Input input, int monsterNumber);
 
     protected:
         int life;
@@ -47,6 +48,8 @@ class Player
         int playerDeathTimer;
         int ghostPlayerX,ghostPlayerY;
         int prevPlayerX,prevPlayerY;
+
+        int playerCollision;
 
         Texture playerTexture;
         Sprite playerSprite;

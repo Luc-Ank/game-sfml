@@ -34,9 +34,21 @@ void Window::Run()
 				|| (event.type == sf::Event::Closed) )
 			{
 				LvlWindow_->close();
-				TilWindow_->close();
+				if (TilWindow_->isOpen())
+					TilWindow_->close();
 			}	
 		}
+		while (TilWindow_->pollEvent( event ))
+		{
+			if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
+				|| (event.type == sf::Event::Closed) )
+			{
+				TilWindow_->close();
+				if (LvlWindow_->isOpen())
+					LvlWindow_->close();
+			}	
+		}
+
 		LvlWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
 

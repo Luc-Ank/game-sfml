@@ -28,6 +28,7 @@ class Map
         void changeLevel(std::string filename);
 
         int getTileCollision(int x,int y) const;
+        Sprite getSprite(int x, int y) const;
 
         int getTileBreak(int x,int y) const;
         int getLifeTileBreak(int x,int y) const;

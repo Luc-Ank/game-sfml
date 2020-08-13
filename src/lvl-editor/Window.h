@@ -19,6 +19,9 @@ public:
 	std::string lvl_filename() const;
 	std::string til_filename() const;
 
+	void image_draw() const;
+	void close_windows() const;
+
 	void Run();
 
 private:

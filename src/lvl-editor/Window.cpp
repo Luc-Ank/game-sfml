@@ -2,6 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 
+#define SF_STYLE sf::Style::Titlebar | sf::Style::Close
 
 LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 			   const std::string file, const std::string til):
@@ -9,10 +10,11 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	lvl_filename_(file), til_filename_(til),
 	currentLayer_(0)
 {
-	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor" );
-	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector" );
+	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
+	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
+	currentTile_ = 0 ;
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
 	{
@@ -67,7 +69,7 @@ void LEWindow::setCurrentLayer (int i)
 		std::cout << "Bad value for layer (" << i << ")" << std::endl ;
 	}
 }
-
+void LEWindow::setCurrentTile (int i) { currentTile_ = i ;}
 
 void LEWindow::image_draw() const
 {
@@ -97,10 +99,12 @@ void LEWindow::Run()
 		while (LvlWindow_->pollEvent( event ))
 		{
 			seekKeyEvent( event );
+			seekMouseLevelEvent( event );
 		}
 		while (TilWindow_->pollEvent( event ))
 		{
 			seekKeyEvent( event );
+			seekMouseTileEvent( event );
 		}
 
 		LvlWindow_->clear( sf::Color::Black );
@@ -139,4 +143,47 @@ void LEWindow::seekKeyEvent(sf::Event event)
 	{
 		setCurrentLayer( 4 );
 	}
+}
+
+
+
+void LEWindow::seekMouseLevelEvent( sf::Event event )
+{
+
+}
+
+
+void LEWindow::seekMouseTileEvent( sf::Event event )
+{
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		if (event.mouseButton.button == sf::Mouse::Left)
+		{
+			std::pair<int,int> ind = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
+			std::cout << "Indice " << ind.first << " , " << ind.second << std::endl;
+			std::cout << "Tile n° " << indiceFromPair( ind ) << std::endl ;
+			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ) ) );
+		} else if (event.mouseButton.button == sf::Mouse::Right)
+		{
+			std::cout << "the right button was pressed" << std::endl;
+			std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+			std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+		}
+	}
+}
+
+
+
+std::pair<int,int> LEWindow::PairFromPosition(int x, int y) const
+{
+	std::pair<int,int> indice ;
+	indice.first  = x / TILE_SIZE ;
+	indice.second = y / TILE_SIZE ;
+	return indice ;
+}
+
+
+int LEWindow::indiceFromPair( std::pair<int,int> indice ) const
+{
+	return indice.first + 10*indice.second ;
 }

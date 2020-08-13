@@ -49,6 +49,7 @@ void Monster::setMonsterStand(int valeur){ monsterStand = valeur; }
 
 void Monster::drawMonster(RenderWindow &window)
 {
+    prevMonsterFrameNumber = monsterFrameNumber;
     if (monsterFrameTimer <= 0)
     {
         monsterFrameTimer = TimeBetween2FrameMonster;
@@ -71,7 +72,6 @@ void Monster::drawMonster(RenderWindow &window)
     }
 
     monsterSprite.setPosition(Vector2f(monsterX,monsterY));
-
     monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
     (monsterDirection+START_MONSTER_WALK)*monsterH,
     monsterW,monsterH));
@@ -83,9 +83,11 @@ void Monster::initMonster(int x, int y)
     life = 100;
 
     monsterDirection = monsterDOWN;
+    prevMonsterDirection = monsterDOWN;
     monsterEtat = IDLE;
 
     monsterFrameNumber = 0;
+    prevMonsterFrameNumber = 0;
     monsterFrameTimer = TimeBetween2FrameMonster;
     monsterFrameMax = MONSTER_FRAME_MAX;
 
@@ -209,6 +211,8 @@ void Monster::monsterMapCollision(Map & map)
         }    
     }
 
+    prevMonsterX = monsterX;
+    prevMonsterY = monsterY;
     monsterX += ghostMonsterX;
     monsterY += ghostMonsterY;
 
@@ -246,6 +250,7 @@ void Monster::updateMonster(std::string action, Map &map)
         if(action == "left")
         {
             ghostMonsterX -= monsterSpeed + monsterIsRunning;
+            prevMonsterDirection = monsterDirection;
             monsterDirection = monsterLEFT;
 
             if(monsterEtat != monsterWALK)
@@ -259,6 +264,7 @@ void Monster::updateMonster(std::string action, Map &map)
         else if(action == "right")
         {
             ghostMonsterX += monsterSpeed + monsterIsRunning;
+            prevMonsterDirection = monsterDirection;
             monsterDirection = monsterRIGHT;
 
             if(monsterEtat != monsterWALK)
@@ -272,6 +278,7 @@ void Monster::updateMonster(std::string action, Map &map)
         else if(action == "up")
         {
             ghostMonsterY -= monsterSpeed + monsterIsRunning;
+            prevMonsterDirection = monsterDirection;
             monsterDirection = monsterUP;
 
             if(monsterEtat != monsterWALK)
@@ -285,6 +292,7 @@ void Monster::updateMonster(std::string action, Map &map)
         else if(action == "down")
         {
             ghostMonsterY += monsterSpeed + monsterIsRunning;
+            prevMonsterDirection = monsterDirection;
             monsterDirection = monsterDOWN;
 
             if(monsterEtat != monsterWALK)

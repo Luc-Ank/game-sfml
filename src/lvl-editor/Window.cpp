@@ -56,6 +56,8 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
 std::string LEWindow::til_filename() const { return til_filename_ ; }
 int LEWindow::currentLayer() const { return currentLayer_ ; }
+int LEWindow::currentTile() const { return currentTile_ ; }
+
 
 
 void LEWindow::setCurrentLayer (int i)
@@ -74,6 +76,14 @@ void LEWindow::setCurrentTile (int i) { currentTile_ = i ;}
 void LEWindow::image_draw() const
 {
 	TilWindow_->draw( tileSprite_ );
+
+	sf::RectangleShape rect( sf::Vector2f(TILE_SIZE_f, TILE_SIZE_f) );
+	rect.setFillColor( sf::Color::Transparent );
+	rect.setOutlineThickness( 2.f );
+	rect.setOutlineColor( sf::Color::White );
+	std::pair<int,int> pair = posCurrentTile( true ) ;
+	rect.setPosition( (float) pair.first * TILE_SIZE_f, (float) pair.second * TILE_SIZE_f );
+	TilWindow_->draw( rect );
 }
 
 
@@ -163,9 +173,12 @@ void LEWindow::seekMouseTileEvent( sf::Event event )
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			std::pair<int,int> ind = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
+			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ) ) );
+
 			std::cout << "Indice " << ind.first << " , " << ind.second << std::endl;
 			std::cout << "Tile n° " << indiceFromPair( ind ) << std::endl ;
-			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ) ) );
+			std::pair<int,int> pair = posCurrentTile( true ) ;
+			std::cout << pair.first << " , " << pair.second << std::endl ;
 		} else if (event.mouseButton.button == sf::Mouse::Right)
 		{
 			std::cout << "the right button was pressed" << std::endl;
@@ -189,4 +202,13 @@ std::pair<int,int> LEWindow::PairFromPosition(int x, int y) const
 int LEWindow::indiceFromPair( std::pair<int,int> indice ) const
 {
 	return indice.first + 10*indice.second ;
+}
+
+
+std::pair<int,int> LEWindow::posCurrentTile(bool tile) const
+{
+	std::pair<int,int> pair ;
+	pair.first  = (tile) ? currentTile()%nbTileT_W : currentTile()%nbTile_W ;
+	pair.second = (tile) ? currentTile()/nbTileT_W : currentTile()/nbTile_W ;
+	return pair ;
 }

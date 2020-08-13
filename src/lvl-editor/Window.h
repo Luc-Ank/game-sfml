@@ -45,7 +45,7 @@ public:
 	void seekMouseTileEvent(sf::Event) ;
 	std::pair<int,int> PairFromPosition(int,int) const ;
 	int indiceFromPair(std::pair<int,int>) const ;
-	std::pair<int,int> PairFromIndice(bool) const ;
+	std::pair<int,int> posCurrentTile(bool) const ;
 
 private:
 	int currentLayer_, currentTile_ ;

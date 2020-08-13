@@ -6,7 +6,7 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: levelWindow.o tileWindow.o
 
-Window.o: Window.cpp
+Window.o: Window.cpp Window.h
 	$(CC) -shared $(SFML) $(CFLAGS) $(THREAD) Window.cpp
 
 

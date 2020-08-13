@@ -10,9 +10,8 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
 	lvl_filename_(file), til_filename_(til),
 	currentLayer_(0), currentTile_(0)
+	currentLayer_(0)
 {
-	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
-	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 
@@ -56,7 +55,6 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
 std::string LEWindow::til_filename() const { return til_filename_ ; }
 int LEWindow::currentLayer() const { return currentLayer_ ; }
-int LEWindow::currentTile() const { return currentTile_ ; }
 
 
 void LEWindow::setCurrentLayer (int i)
@@ -70,21 +68,11 @@ void LEWindow::setCurrentLayer (int i)
 		std::cout << "Bad value for layer (" << i << ")" << std::endl ;
 	}
 }
-
-void LEWindow::setCurrentTile (int i) { currentTile_ = i ; }
-
+void LEWindow::setCurrentTile (int i) { currentTile_ = i ;}
 
 void LEWindow::image_draw() const
 {
 	TilWindow_->draw( tileSprite_ );
-
-	// sf::RectangleShape tileRect_ ;
-	// tileRect_.setSize(sf::Vector2f(100.f, 100.f));
-	// tileRect_.setFillColor( sf::Color::Transparent );
-	// tileRect_.setOutlineThickness( 10.f );
-	// tileRect_.setOutlineColor( sf::Color::White );
-
-	// TilWindow_->draw( tileRect_ );
 }
 
 
@@ -160,6 +148,7 @@ void LEWindow::seekKeyEvent(sf::Event event)
 }
 
 
+
 void LEWindow::seekMouseLevelEvent( sf::Event event )
 {
 
@@ -199,13 +188,4 @@ std::pair<int,int> LEWindow::PairFromPosition(int x, int y) const
 int LEWindow::indiceFromPair( std::pair<int,int> indice ) const
 {
 	return indice.first + 10*indice.second ;
-}
-
-
-std::pair<int,int> LEWindow::PairFromIndice(bool tile) const
-{
-	std::pair<int,int> ind;
-	ind.first = (tile) ? currentTile()%nbTileT_W : currentTile()%nbTile_H ;
-	ind.second= (tile) ? currentTile()/nbTileT_W : currentTile()/nbTile_H ;
-	return ind ;
 }

@@ -71,10 +71,20 @@ void LEWindow::setCurrentLayer (int i)
 	}
 }
 
+void LEWindow::setCurrentTile (int i) { currentTile_ = i ; }
+
 
 void LEWindow::image_draw() const
 {
 	TilWindow_->draw( tileSprite_ );
+
+	// sf::RectangleShape tileRect_ ;
+	// tileRect_.setSize(sf::Vector2f(100.f, 100.f));
+	// tileRect_.setFillColor( sf::Color::Transparent );
+	// tileRect_.setOutlineThickness( 10.f );
+	// tileRect_.setOutlineColor( sf::Color::White );
+
+	// TilWindow_->draw( tileRect_ );
 }
 
 

@@ -164,9 +164,13 @@ void LEWindow::seekMouseLevelEvent( sf::Event event )
 {
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
+		std::pair<int,int> pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
-			map_.changeTile( currentLayer(), PairFromPosition( event.mouseButton.x, event.mouseButton.y ), currentTile() );
+			map_.changeTile( currentLayer(), pair, currentTile() );
+		} else if (event.mouseButton.button == sf::Mouse::Right)
+		{
+			map_.changeTile( currentLayer(), pair, 0 );
 		}
 	}
 }
@@ -179,12 +183,10 @@ void LEWindow::seekMouseTileEvent( sf::Event event )
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ), true ) );
-		} else if (event.mouseButton.button == sf::Mouse::Right)
+		} /*else if (event.mouseButton.button == sf::Mouse::Right)
 		{
-			std::cout << "the right button was pressed" << std::endl;
-			std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-			std::cout << "mouse y: " << event.mouseButton.y << std::endl;
-		}
+
+		}*/
 	}
 }
 

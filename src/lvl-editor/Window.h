@@ -14,14 +14,20 @@
 class Window
 {
 public:
+	// Constructor
 	Window(sf::RenderWindow *, sf::RenderWindow *,
 		   const std::string, const std::string);
+
+	// Accessors
 	std::string lvl_filename() const;
 	std::string til_filename() const;
 
+	// Draw the tile set on the window
 	void image_draw() const;
+	// Close all windows
 	void close_windows() const;
 
+	// Run the application
 	void Run();
 
 private:

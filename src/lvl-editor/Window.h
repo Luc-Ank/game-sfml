@@ -38,9 +38,9 @@ public:
 	void seekKeyEvent(sf::Event) ;
 
 private:
+	int currentLayer_ ;
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
-	int currentLayer_ ;
 	sf::Texture tileTexture_ ;
 	sf::Sprite  tileSprite_; 
 	Map map_ ;

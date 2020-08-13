@@ -60,7 +60,7 @@ void Map::setLifeTileBreak(int x,int y, int valeur)
     }
 }
 
-void Map::loadMap(std::string filename)
+void Map::loadMap(std::string filename, bool life)
 {
     std::fstream fin;
     int x = 0;
@@ -134,12 +134,15 @@ void Map::loadMap(std::string filename)
             tile4[x][y] = lignes[x+nbTile_H*3][y];
         }
     }
-    std::cout << "Remplissage lifeTile4" << std::endl;
-    for (x=0; x < nbTile_H; x++)
+    if (life)
     {
-        for (y=0; y < nbTile_W; y++)
+        std::cout << "Remplissage lifeTile4" << std::endl;
+        for (x=0; x < nbTile_H; x++)
         {
-            lifeTile4[x][y] = lignes[x+nbTile_H*4][y];
+            for (y=0; y < nbTile_W; y++)
+            {
+                lifeTile4[x][y] = lignes[x+nbTile_H*4][y];
+            }
         }
     }
     std::cout << "end loadmap " << std::endl;
@@ -147,7 +150,7 @@ void Map::loadMap(std::string filename)
 
 void Map::drawMap(int layer, RenderWindow &window)
 {
-    int x,y,a,posx,posy; 
+    int x,y,a,posx,posy;
 
     if (mapTimerChangeTile <= 0)
     {

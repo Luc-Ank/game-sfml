@@ -23,7 +23,7 @@ class Map
     public:
         Map();
 
-        void loadMap(std::string filename);
+        void loadMap(std::string filename, bool life=true);
         void drawMap(int layer, RenderWindow &window);
         void changeLevel(std::string filename);
 

@@ -12,6 +12,7 @@
 #include <SFML/System.hpp>
 
 #include "../Map/map.hpp"
+#include "../Collision/collision.hpp"
 
 using namespace sf;
 
@@ -48,12 +49,14 @@ class Monster
         int monsterX,monsterY;
         int monsterW,monsterH;
         int monsterFrameNumber, monsterFrameTimer, monsterFrameMax;
+        int prevMonsterFrameNumber;
 
         int monsterIsRunning,monsterIsAttacking;
         int monsterEtat,monsterDirection;
 
         int ghostMonsterX,ghostMonsterY;
         int prevMonsterX,prevMonsterY;
+        int prevMonsterDirection;
 
         int monsterStand;
 
@@ -69,10 +72,10 @@ class Monster
         const int monsterWALK = 1;
         const int monsterDEAD = 4;
 
-        const int monsterDOWN = 3;
-        const int monsterLEFT = 2;
-        const int monsterRIGHT = 4;
         const int monsterUP = 1;
+        const int monsterLEFT = 2;
+        const int monsterDOWN = 3;
+        const int monsterRIGHT = 4;
 
         enum{up,down,right,left,attack,run,protect};
 

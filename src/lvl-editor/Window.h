@@ -12,6 +12,9 @@
 #define LVL_H		768
 #define nbTile_W 	32
 #define nbTile_H 	24
+#define nbTileT_W	10
+#define TILE_SIZE	32
+#define TILE_SIZE_f	32.f
 
 class LEWindow
 {
@@ -24,9 +27,11 @@ public:
 	std::string lvl_filename() const;
 	std::string til_filename() const;
 	int currentLayer() const;
+	int currentTile() const;
 
 	// Mutators
 	void setCurrentLayer(int);
+	void setCurrentTile(int);
 
 	// Draw the tile set on the window
 	void image_draw() const;
@@ -36,11 +41,16 @@ public:
 	// Run the application
 	void Run();
 	void seekKeyEvent(sf::Event) ;
+	void seekMouseLevelEvent(sf::Event) ;
+	void seekMouseTileEvent(sf::Event) ;
+	std::pair<int,int> PairFromPosition(int,int) const ;
+	int indiceFromPair(std::pair<int,int>) const ;
+	std::pair<int,int> PairFromIndice(bool) const ;
 
 private:
-	int currentLayer_ ;
-	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
+	int currentLayer_, currentTile_ ;
 	std::string lvl_filename_, til_filename_ ;
+	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	sf::Texture tileTexture_ ;
 	sf::Sprite  tileSprite_; 
 	Map map_ ;

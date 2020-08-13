@@ -326,3 +326,26 @@ void Map::saveLevel(std::string const filename) const
         std::cout << "Level saved in " << filename << std::endl ;
     }
 }
+
+
+
+void Map::changeTile( int layer, std::pair<int,int> coord, int tile )
+{
+    switch (layer)
+    {
+        case 0:
+            tile1[coord.second][coord.first] = tile ;
+            break ;
+        case 1:
+            tile2[coord.second][coord.first] = tile ;
+            break ;
+        case 2:
+            tile3[coord.second][coord.first] = tile ;
+            break ;
+        case 3:
+            tile4[coord.second][coord.first] = tile ;
+            break ;
+        default:
+            std::cerr << "Wrong layer" << std::endl ;
+    }
+}

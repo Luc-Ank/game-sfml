@@ -39,12 +39,14 @@ public:
 	void close_windows() const;
 
 	// Run the application
+	// in a concerned application : bool correspond to if we are in the tile
+	// 	window or not
 	void Run();
 	void seekKeyEvent(sf::Event) ;
 	void seekMouseLevelEvent(sf::Event) ;
 	void seekMouseTileEvent(sf::Event) ;
-	std::pair<int,int> PairFromPosition(int,int) const ;
-	int indiceFromPair(std::pair<int,int>) const ;
+	std::pair<int,int> PairFromPosition(int, int) const ;
+	int indiceFromPair(std::pair<int,int>, bool) const ;
 	std::pair<int,int> posCurrentTile(bool) const ;
 
 private:

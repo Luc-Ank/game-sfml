@@ -162,7 +162,13 @@ void LEWindow::seekKeyEvent(sf::Event event)
 
 void LEWindow::seekMouseLevelEvent( sf::Event event )
 {
-
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		if (event.mouseButton.button == sf::Mouse::Left)
+		{
+			map_.changeTile( currentLayer(), PairFromPosition( event.mouseButton.x, event.mouseButton.y ), currentTile() );
+		}
+	}
 }
 
 
@@ -172,13 +178,7 @@ void LEWindow::seekMouseTileEvent( sf::Event event )
 	{
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
-			std::pair<int,int> ind = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
-			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ) ) );
-
-			std::cout << "Indice " << ind.first << " , " << ind.second << std::endl;
-			std::cout << "Tile n° " << indiceFromPair( ind ) << std::endl ;
-			std::pair<int,int> pair = posCurrentTile( true ) ;
-			std::cout << pair.first << " , " << pair.second << std::endl ;
+			setCurrentTile( indiceFromPair( PairFromPosition( event.mouseButton.x, event.mouseButton.y ), true ) );
 		} else if (event.mouseButton.button == sf::Mouse::Right)
 		{
 			std::cout << "the right button was pressed" << std::endl;
@@ -199,9 +199,10 @@ std::pair<int,int> LEWindow::PairFromPosition(int x, int y) const
 }
 
 
-int LEWindow::indiceFromPair( std::pair<int,int> indice ) const
+int LEWindow::indiceFromPair( std::pair<int,int> indice, bool tile ) const
 {
-	return indice.first + 10*indice.second ;
+	int fact = (tile) ? nbTileT_W : nbTile_W ;
+	return indice.first + fact*indice.second ;
 }
 
 

@@ -49,6 +49,6 @@ protected:
 
     Map map;
     Player player;
-    Monster monster;
+    Monster monster[3];
 };
 #endif

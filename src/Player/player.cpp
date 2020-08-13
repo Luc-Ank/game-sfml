@@ -18,11 +18,14 @@ using namespace sf;
 #define nbTile_H 24
 #define Tile_Size 32
 
-#define playerHW 32
+#define PLAYERH 64
+#define PLAYERW 64
+#define START_PLAYER_WALK 7
+#define PLAYER_FRAME_MAX 7
 
 Player::Player()
 {
-    if(!playerTexture.loadFromFile("Images/boss.png"))
+    if(!playerTexture.loadFromFile("Images/player.png"))
     {
         std::cout << "Err chargement de l'image du player" << std::endl;
     }
@@ -30,7 +33,7 @@ Player::Player()
     {
         playerSprite.setTexture(playerTexture);
     }
-    if(!swordTexture.loadFromFile("Images/sword.png"))
+    /*if(!swordTexture.loadFromFile("Images/sword.png"))
     {
         std::cout << "Err chargement de l'image de l'epée" << std::endl;
     }
@@ -45,7 +48,7 @@ Player::Player()
     else
     {
         shieldSprite.setTexture(shieldTexture);
-    }
+    }*/
 
     ghostPlayerX = 0;
     ghostPlayerY = 0;
@@ -66,6 +69,8 @@ Player::Player()
     shieldRotation = 0;
 
 }
+
+Sprite Player::getPlayerSprite(void) const { return playerSprite; }
 
 void Player::drawPlayer(RenderWindow &window)
 {
@@ -104,9 +109,15 @@ void Player::drawPlayer(RenderWindow &window)
     else
     {
         playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
-        (playerDirection)*playerH,
-        playerH,playerW));
+        (playerDirection+START_PLAYER_WALK)*playerH,
+        playerW,playerH));
         window.draw(playerSprite);  
+        RectangleShape shape(Vector2f(playerW,playerH));//hitboxplayer
+        shape.setFillColor(Color::Transparent);
+        shape.setPosition(playerX,playerY);
+        shape.setOutlineThickness(2);
+        shape.setOutlineColor(Color(250,0,0));
+        window.draw(shape);
     }
 }
 
@@ -120,14 +131,14 @@ void Player::initPlayer()
 
     playerFrameNumber = 0;
     playerFrameTimer = TimeBetween2FramePlayer;
-    playerFrameMax = 3;
+    playerFrameMax = PLAYER_FRAME_MAX;
 
     playerX = 0;
     playerY = 0;
     prevPlayerX = 0;
     prevPlayerY = 0;
-    playerH = playerHW;
-    playerW = playerHW;
+    playerH = PLAYERH;
+    playerW = PLAYERW;
     
     playerCollision = 0;
     playerDeathTimer = 0;
@@ -161,7 +172,7 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 playerEtat = playerWALK;
                 playerFrameNumber = 0;
                 playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = 3;
+                playerFrameMax = PLAYER_FRAME_MAX;
             }
         }
         else if(input.getButton().right == true)
@@ -174,7 +185,7 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 playerEtat = playerWALK;
                 playerFrameNumber = 0;
                 playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = 3;
+                playerFrameMax = PLAYER_FRAME_MAX;
             }            
         }
         else if(input.getButton().up == true)
@@ -187,7 +198,7 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 playerEtat = playerWALK;
                 playerFrameNumber = 0;
                 playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = 3;
+                playerFrameMax = PLAYER_FRAME_MAX;
             }            
         }
         else if(input.getButton().down == true)
@@ -200,7 +211,7 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 playerEtat = playerWALK;
                 playerFrameNumber = 0;
                 playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = 3;
+                playerFrameMax = PLAYER_FRAME_MAX;
             }            
         }
         else if(input.getButton().right == false && input.getButton().left == false &&
@@ -211,7 +222,7 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 playerEtat = IDLE;
                 playerFrameNumber = 0;
                 playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = 3;
+                playerFrameMax = PLAYER_FRAME_MAX;
             }
         }
 
@@ -242,7 +253,7 @@ void Player::playerCenterScrolling(Map & map)
 
 }
 
-void Player::playerMapCollision(Map & map)
+/*void Player::playerMapCollision(Map & map)
 {
     int i,x1,x2,y1,y2;
 
@@ -425,8 +436,103 @@ void Player::playerMapCollision(Map & map)
     {
         playerY = screen_H - playerH;
     }    
-}
+}*/
 
+
+void Player::playerMapCollision(Map & map)
+{
+    Sprite testcol;
+    int Wtest = (PLAYERW/Tile_Size)+1;
+    int Htest = (PLAYERH/Tile_Size)+1;
+    int nx,ny;
+    nx = (playerX+ghostPlayerX)/Tile_Size;
+    ny = (playerY+ghostPlayerY)/Tile_Size;
+    //std::cout << playerX << " " << playerY << " " << nx << " " << ny <<  std::endl;
+    if(ghostPlayerX > 0)
+    {
+        for (int i=0; i < Wtest ; i++)
+        {
+            if (map.getTileCollision(ny+i,nx+2) == MUR1)
+            {
+                testcol = map.getSprite(ny+i,nx+2);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerX = 0;
+                    break;
+                }
+            }
+        }
+    }
+    else if(ghostPlayerX < 0)
+    {
+        for (int i=0; i < Wtest ; i++)
+        {
+            if (map.getTileCollision(ny+i,nx) == MUR1)
+            {
+                testcol = map.getSprite(ny+i,nx);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerX = 0;
+                    break;
+                }
+            }
+        }
+    }
+    if(ghostPlayerY > 0)
+    {
+        for (int i=0; i < Htest ; i++)
+        {
+            if (map.getTileCollision(ny+2,nx+i) == MUR1)
+            {
+                testcol = map.getSprite(ny+2,nx+i);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerY = 0;
+                    break;
+                }
+            }
+        }
+    }
+    else if(ghostPlayerY < 0)
+    {
+        for (int i=0; i < Htest ; i++)
+        {
+            if (map.getTileCollision(ny,nx+i) == MUR1)
+            {
+                testcol = map.getSprite(ny,nx+i);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerY = 0;
+                    break;
+                }
+            }
+        }
+    }
+    prevPlayerX = playerX;
+    prevPlayerY = playerY;
+    playerX += ghostPlayerX;
+    playerY += ghostPlayerY;
+    if(playerX < 0)
+    {
+        playerX = 0;
+    }
+    else if (playerX + playerW > screen_W)
+    {
+        playerX = screen_W - playerW;
+    }
+    else if(playerY < 0)
+    {
+        playerY = 0;
+    }
+    else if (playerY + playerH > screen_H)
+    {
+        playerY = screen_H - playerH;
+    }  
+}
 
 void Player::playerMonsterCollision(Monster monster[], Input input, int monsterNumber)
 {   
@@ -434,7 +540,7 @@ void Player::playerMonsterCollision(Monster monster[], Input input, int monsterN
     playerSprite.setPosition(Vector2f(playerX,playerY));
     for (int i= 0; i < monsterNumber; i++)
     {
-        //if(playerSprite.getGlobalBounds().intersects(monsterSprite.getGlobalBounds()))
+        //if(playerSprite.getGlobalBounds().intersects(monster[i].getMonsterSprite().getGlobalBounds()))
         if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
         {
             monster[i].setMonsterStand(0);
@@ -453,6 +559,7 @@ void Player::playerMonsterCollision(Monster monster[], Input input, int monsterN
     }
     else
     {
+
         playerSprite.setPosition(Vector2f(playerX,playerY));
     }    
 }

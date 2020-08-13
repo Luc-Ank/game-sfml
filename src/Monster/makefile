@@ -6,7 +6,7 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: monster.o
 
-monster.o: monster.cpp monster.hpp ../Map/map.o
+monster.o: monster.cpp monster.hpp ../Map/map.o 
 	$(CC) -shared $(CFLAGS) $(THREAD)  monster.cpp  $(SFML)
 
 clean:

@@ -17,8 +17,8 @@ test.o: test.cpp Level/level1.o
 clean:
 	\rm *.o game-sfml
 
-level-editor: level-editor.o lvl-editor/Window.o
-	$(CC) $(THREAD) level-editor.o lvl-editor/Window.o -o level-editor $(SFML)
+level-editor: level-editor.o lvl-editor/Window.o Map/map.o
+	$(CC) $(THREAD) level-editor.o lvl-editor/Window.o Map/map.o -o level-editor $(SFML)
 
 level-editor.o: level-editor.cpp
 	$(CC) $(THREAD) $(SFML) $(CFLAGS) level-editor.cpp

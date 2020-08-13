@@ -46,6 +46,18 @@ int Map::getTileCollision(int x,int y) const { return tile3[x][y]; }
 int Map::getTileBreak(int x,int y) const { return tile4[x][y]; }
 int Map::getLifeTileBreak(int x,int y) const { return lifeTile4[x][y]; }
 
+Sprite Map::getSprite(int x, int y) const
+{
+    Sprite retsprite;
+    int a = tile3[x][y];
+    int posx = a % 10 * Tile_Size;
+    int posy = a / 10 * Tile_Size;
+    retsprite.setTexture(tileSetTexture1);
+    retsprite.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+    retsprite.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+    return retsprite;
+}
+
 void Map::setTileBreak(int x,int y, int valeur) { tile4[x][y] = valeur; }
 void Map::setLifeTileBreak(int x,int y, int valeur)
 { 

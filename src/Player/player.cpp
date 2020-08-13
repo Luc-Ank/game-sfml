@@ -9,6 +9,7 @@
 #include <SFML/System.hpp>
 
 #include "player.hpp"
+#include "../Collision/collision.hpp"
 using namespace sf;
 
 #define screen_W 1024
@@ -89,7 +90,7 @@ void Player::drawPlayer(RenderWindow &window)
         }
     }
 
-    playerSprite.setPosition(Vector2f(playerX,playerY));
+    //playerSprite.setPosition(Vector2f(playerX,playerY));
 
     if(invincibleTimer > 0)
     {
@@ -105,7 +106,7 @@ void Player::drawPlayer(RenderWindow &window)
         playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
         (playerDirection)*playerH,
         playerH,playerW));
-        window.draw(playerSprite);    
+        window.draw(playerSprite);  
     }
 }
 
@@ -123,14 +124,17 @@ void Player::initPlayer()
 
     playerX = 0;
     playerY = 0;
+    prevPlayerX = 0;
+    prevPlayerY = 0;
     playerH = playerHW;
     playerW = playerHW;
     
+    playerCollision = 0;
     playerDeathTimer = 0;
     playerIsAttacking = 0;
 }
 
-void Player::updatePlayer(Input &input, Map &map)
+void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber)
 {
     if (playerDeathTimer == 0)
     {
@@ -212,7 +216,7 @@ void Player::updatePlayer(Input &input, Map &map)
         }
 
         playerMapCollision(map);
-
+        playerMonsterCollision(monster, input, monsterNumber);
         playerCenterScrolling(map);
     }
 
@@ -400,6 +404,8 @@ void Player::playerMapCollision(Map & map)
         }    
     }
 
+    prevPlayerX = playerX;
+    prevPlayerY = playerY;
     playerX += ghostPlayerX;
     playerY += ghostPlayerY;
 
@@ -418,5 +424,35 @@ void Player::playerMapCollision(Map & map)
     else if (playerY + playerH > screen_H)
     {
         playerY = screen_H - playerH;
+    }    
+}
+
+
+void Player::playerMonsterCollision(Monster monster[], Input input, int monsterNumber)
+{   
+    playerCollision = 0;
+    playerSprite.setPosition(Vector2f(playerX,playerY));
+    for (int i= 0; i < monsterNumber; i++)
+    {
+        //if(playerSprite.getGlobalBounds().intersects(monsterSprite.getGlobalBounds()))
+        if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
+        {
+            monster[i].setMonsterStand(0);
+            playerCollision = 1;
+        }
+        else
+        {
+            monster[i].setMonsterStand(1);
+        }
+    }
+    if(playerCollision)
+    {
+        playerSprite.setPosition(Vector2f(prevPlayerX,prevPlayerY));
+        playerX = prevPlayerX;
+        playerY = prevPlayerY;        
+    }
+    else
+    {
+        playerSprite.setPosition(Vector2f(playerX,playerY));
     }    
 }

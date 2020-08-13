@@ -4,18 +4,20 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <string>
+#include "../Map/map.hpp"
 
-#define TILE_W 320
-#define TILE_H 1280
+#define TILE_W		320
+#define TILE_H		1280
+#define LVL_W 		1024
+#define LVL_H		768
+#define nbTile_W 	32
+#define nbTile_H 	24
 
-#define LVL_W 1024
-#define LVL_H 768
-
-class Window
+class LEWindow
 {
 public:
 	// Constructor
-	Window(sf::RenderWindow *, sf::RenderWindow *,
+	LEWindow(sf::RenderWindow *, sf::RenderWindow *,
 		   const std::string, const std::string);
 
 	// Accessors
@@ -33,6 +35,7 @@ public:
 private:
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
+	Map map_ ;
 };
 
 

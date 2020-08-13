@@ -19,10 +19,10 @@ int main (int argc, char ** argv)
 
 	sf::RenderWindow levelRenderWindow, tileRenderWindow;
 
-	Window win( &levelRenderWindow, &tileRenderWindow, argv[1], argv[2] );
+	LEWindow win( &levelRenderWindow, &tileRenderWindow, argv[1], argv[2] );
 
 	// handle the window
-	std::thread thread_disp( &Window::Run, &win );
+	std::thread thread_disp( &LEWindow::Run, &win );
  
 
 

@@ -1,8 +1,9 @@
 #include "Window.h"
 #include <iostream>
+#include <unistd.h>
 
 
-Window::Window(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
+LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 			   const std::string file, const std::string til):
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
 	lvl_filename_(file), til_filename_(til)
@@ -11,14 +12,34 @@ Window::Window(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector" );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
+
+	// test if the level file doesn't exist
+	if ( (access( file, R_OK|W_OK )) == -1)
+	{
+		// if so, we create it, empty
+		std::ofstream empty_level( file, std::ios::out) ;
+		for (int l=0; l<4; l++)
+		{
+			for (int y=0; y<nbTile_H-1; y++)
+			{
+				for (int x=0; x<nbTile_W-1; x++)
+				{
+					empty_level << "0," ;
+				}
+				empty_level << "0" << std::endl ;
+			}
+			empty_level << std::endl ;
+		}
+
+	}
 }
 
-std::string Window::lvl_filename() const
+std::string LEWindow::lvl_filename() const
 {
 	return lvl_filename_ ;
 }
 
-std::string Window::til_filename() const
+std::string LEWindow::til_filename() const
 {
 	return til_filename_ ;
 }
@@ -26,7 +47,7 @@ std::string Window::til_filename() const
 
 
 
-void Window::image_draw() const
+void LEWindow::image_draw() const
 {
 	sf::Texture text ;
 	if (!text.loadFromFile( til_filename() ))
@@ -42,7 +63,7 @@ void Window::image_draw() const
 
 
 
-void Window::close_windows() const
+void LEWindow::close_windows() const
 {
 	if (LvlWindow_->isOpen())
 		LvlWindow_->close();
@@ -55,7 +76,7 @@ void Window::close_windows() const
 
 
 
-void Window::Run()
+void LEWindow::Run()
 {
 	while (LvlWindow_->isOpen())
 	{

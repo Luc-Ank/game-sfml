@@ -44,7 +44,7 @@ class Monster
         void setMonsterStand(int valeur);
 
     protected:
-        int life;
+        int monsterLife,monsterLifeMax;
 
         int monsterX,monsterY;
         int monsterW,monsterH;

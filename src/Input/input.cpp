@@ -6,7 +6,7 @@ using namespace sf;
 Input::Input()
 {
     button.left = button.right = button.up = button.down = button.run = button.attack = false;
-    button.enter = button.protect = false;
+    button.enter = button.protect = button.switchDagger = button.switchSpear = false;
 }
 
 Input::Button Input::getButton(void) const {return button;}
@@ -38,6 +38,12 @@ void Input::setButton(int bouton, bool etat)
             break;
         case protect:
             button.protect = etat;
+            break;
+        case switchDagger:
+            button.switchDagger = etat;
+            break;
+        case switchSpear:
+            button.switchSpear = etat;
             break;
     }
 }
@@ -84,8 +90,14 @@ void Input::getInput(RenderWindow &window)
                     case Keyboard::Return:
                         button.enter = true;
                         break; 
+                    case Keyboard::G:
+                        button.switchSpear = true;
+                        break; 
+                    case Keyboard::H:
+                        button.switchDagger = true;
+                        break;
                     default:
-                        break;   
+                        break;
                 }
                 break; 
             case Event::KeyReleased:
@@ -115,6 +127,12 @@ void Input::getInput(RenderWindow &window)
                     case Keyboard::Return:
                         button.enter = false;
                         break; 
+                    case Keyboard::G:
+                        button.switchSpear = false;
+                        break; 
+                    case Keyboard::H:
+                        button.switchDagger = false;
+                        break;
                     default:
                         break;  
                 }

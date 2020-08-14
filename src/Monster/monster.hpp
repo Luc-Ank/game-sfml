@@ -28,14 +28,17 @@ class Monster
 
         void drawMonster(RenderWindow &window);
         void initMonster(int x, int y); 
-        void updateMonster(std::string action, Map &map);
+        void updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster);
         //void playerCenterScrolling(Map &map);
         void monsterMapCollision(Map &map);
+        void monsterMonsterCollision(Monster monster[], int monsterNumber, int actualmonster);
 
         int getMonsterH(void) const;
         int getMonsterW(void) const;
         int getMonsterX(void) const;
         int getMonsterY(void) const;
+        int getPrevMonsterX(void) const;
+        int getPrevMonsterY(void) const;        
         int getGhostMonsterX(void) const;
         int getGhostMonsterY(void) const;
         bool getMonsterStand(void) const;
@@ -48,6 +51,8 @@ class Monster
         void setMonsterLife(int valeur);
         void setIsGettingDamage(int valeur);
         void setMonsterIsAlive(int valeur);
+        void setMonsterX(int valeur);
+        void setMonsterY(int valeur);
 
     protected:
         int monsterLife,monsterLifeMax;

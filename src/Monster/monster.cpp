@@ -45,12 +45,15 @@ int Monster::getMonsterH(void) const { return monsterH; }
 int Monster::getMonsterW(void) const { return monsterW; }
 int Monster::getMonsterX(void) const { return monsterX; }
 int Monster::getMonsterY(void) const { return monsterY; }
+int Monster::getPrevMonsterX(void) const { return prevMonsterX; }
+int Monster::getPrevMonsterY(void) const { return prevMonsterY; }
 int Monster::getGhostMonsterX(void) const { return ghostMonsterX; }
 int Monster::getGhostMonsterY(void) const { return ghostMonsterY; }
 Sprite Monster::getMonsterSprite(void) const { return monsterSprite; }
 int Monster::getMonsterLife(void) const { return monsterLife; }
 int Monster::getIsGettingDamage(void) const { return isGettingDamage; }
 int Monster::getMonsterIsAlive(void) const { return monsterIsAlive; }
+bool Monster::getMonsterStand(void) const { return monsterStand; }
 
 void Monster::setIsGettingDamage(int valeur) { isGettingDamage = valeur; }
 void Monster::setMonsterLife(int valeur)
@@ -67,6 +70,8 @@ void Monster::setMonsterLife(int valeur)
 }
 void Monster::setMonsterStand(int valeur){ monsterStand = valeur; }
 void Monster::setMonsterIsAlive(int valeur) { monsterIsAlive = valeur;}
+void Monster::setMonsterX(int valeur) { monsterX = valeur; }
+void Monster::setMonsterY(int valeur) { monsterY = valeur; }
 
 void Monster::drawMonster(RenderWindow &window)
 {
@@ -128,7 +133,7 @@ void Monster::drawMonster(RenderWindow &window)
             monsterFrameTimer -= 1 ;
         }
 
-        monsterSprite.setPosition(Vector2f(monsterX,monsterY));
+        //monsterSprite.setPosition(Vector2f(monsterX,monsterY)); //????
         monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
         (START_MONSTER_DEAD)*monsterH,
         monsterW,monsterH));
@@ -301,7 +306,7 @@ void Monster::monsterMapCollision(Map & map)
 }
 
 
-void Monster::updateMonster(std::string action, Map &map)
+void Monster::updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster)
 {
     if (monsterIsAlive)
     {
@@ -383,6 +388,7 @@ void Monster::updateMonster(std::string action, Map &map)
                 }
             }
             monsterMapCollision(map);
+            monsterMonsterCollision(monster,monsterNumber, actualmonster);
         }
         else
         {
@@ -397,4 +403,40 @@ void Monster::updateMonster(std::string action, Map &map)
             }    
         }
     }
+}
+
+void Monster::monsterMonsterCollision(Monster monster[],int monsterNumber, int actualmonster)
+{
+    int monsterCollisionMonster = 0;
+    int initmonsterStand = monsterStand;
+    
+    if(monsterStand != 0)
+    {
+        for (int i= 0; i < monsterNumber; i++)
+        {
+            if (monster[i].getMonsterIsAlive() && i != actualmonster)
+            {
+                monsterSprite.setPosition(Vector2f(monsterX,monsterY));
+                (monster[i].getMonsterSprite()).setPosition(
+                    Vector2f(monster[i].getMonsterX(),monster[i].getMonsterY()));
+            //if(playerSprite.getGlobalBounds().intersects(monster[i].getMonsterSprite().getGlobalBounds()))
+                if (Collision::PixelPerfectTest(monsterSprite, monster[i].getMonsterSprite()))
+                {
+                    monsterStand = 0;
+                    monster[i].setMonsterStand(0);
+                    monsterCollisionMonster = 1; 
+                }
+            }
+        }
+    }
+    if(monsterStand == 0)
+    {
+        monsterSprite.setPosition(Vector2f(prevMonsterX,prevMonsterY));
+        monsterX = prevMonsterX;
+        monsterY = prevMonsterY;
+    }
+    else
+    {
+        monsterSprite.setPosition(Vector2f(monsterX,monsterY));
+    }   
 }

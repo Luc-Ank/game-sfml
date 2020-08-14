@@ -18,19 +18,7 @@ int rand_action;
 
 void level1::setForm()
 {
-    std::cout << " test " << std::endl;
-    cercle.setFillColor(Color(250,250,0));
-    cercle.setRadius(50);
-    cercle.setPosition(700,400);
 
-    rectangle.setFillColor(Color(250,250,0));
-    rectangle.setSize(Vector2f(50,100));
-    rectangle.setPosition(120,230);
-    //srectangle.setRotation(30);
-
-    cercle.setOutlineColor(Color(0,250,250));
-    cercle.setOutlineThickness(10);
-    //shape.setFillColor(Color::Green);
 }
 
 void level1::setCaracter()
@@ -63,8 +51,8 @@ void level1::draw()
 	monster[0].drawMonster(*window);
 	monster[1].drawMonster(*window);
 	monster[2].drawMonster(*window);
-	window->draw(cercle);
-	window->draw(rectangle);
+	//window->draw(cercle);
+	//window->draw(rectangle);
 	window->draw(sprite_perso);
 }
 

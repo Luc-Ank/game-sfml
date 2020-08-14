@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <iostream>
 #include <unistd.h>
+#include <iomanip>
 
 #define SF_STYLE sf::Style::Titlebar | sf::Style::Close
 
@@ -9,7 +10,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 			   const std::string file, const std::string til):
 	LvlWindow_(lvlWin), TilWindow_(tilWin), ToolWindow_(toolWin),
 	lvl_filename_(file), til_filename_(til),
-	currentLayer_(1), currentLive_(1)
+	currentLayer_(1), currentLive_(0)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
@@ -35,6 +36,10 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 	toolSprite_.setTexture( toolTexture_ );
 	toolSprite_.setPosition( 0.f, 0.f );
 
+	if (!font_.loadFromFile("lvl-editor/font.ttf"))
+	{
+		std::cerr << "Fail to load font" << std::endl ;
+	}
 
 	// test if the level file doesn't exist
 	if ( (access( file.c_str(), R_OK|W_OK )) == -1)
@@ -43,7 +48,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 		std::ofstream empty_level( file, std::ios::out) ;
 		if (empty_level)
 		{
-			for (int l=0; l<4; l++)
+			for (int l=0; l<=5; l++)
 			{
 				for (int y=0; y<nbTile_H; y++)
 				{
@@ -62,7 +67,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 		}
 	}
 
-	map_.loadMap( file, false );
+	map_.loadMap( file );
 }
 
 
@@ -87,6 +92,39 @@ void LEWindow::setCurrentLayer (int i)
 	}
 }
 void LEWindow::setCurrentTile (int i) { currentTile_ = i ;}
+
+
+void LEWindow::map_draw ()
+{
+	for (int l=1; l<=4; l++)
+		map_.drawMap( l, *LvlWindow_ );
+	if ( currentLayer() == 4 )
+	{
+		char *intStr  ;
+		sf::Text text ;
+		text.setCharacterSize( 10 );
+		text.setFillColor( sf::Color::Red );
+		text.setFont( font_ );
+		for (int y=0; y<nbTile_H; y++){
+			for (int x=0; x<nbTile_W; x++)
+			{
+				if (map_.getTileBreak( y,x ) != 0)
+				{
+					std::ostringstream ss;
+					int life = map_.getLifeTileBreak( y,x ) ;
+					if (life != 0)
+					{
+						ss << life ;
+						text.setPosition( (float) x * TILE_SIZE_f , (float) y * TILE_SIZE_f );
+						text.setString( ss.str() );
+						LvlWindow_->draw( text );
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void LEWindow::image_draw() const
 {
@@ -113,6 +151,18 @@ void LEWindow::tool_draw() const
 	pair_t pair = posCurrentTile( true ) ;
 	rect.setPosition( ((float) currentLayer() - 1.f) * TILE_SIZE_f +1.f, 1.f );
 	ToolWindow_->draw( rect );
+
+
+	sf::Text text ;
+	text.setFont( font_ );
+	std::ostringstream ss ;
+	ss << currentLive_ ;
+	text.setString( ss.str() );
+	text.setCharacterSize( 10 );
+	text.setFillColor( sf::Color::Red );
+	text.setPosition( 3.f * TILE_SIZE_f + 2.f, 0.f );
+
+	ToolWindow_->draw( text );
 }
 
 
@@ -157,21 +207,28 @@ void LEWindow::Run()
 			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
 			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, currentTile() );
+			if (currentLayer() == 4)
+			{
+				map_.setLifeTileBreak( pair.second, pair.first, currentLive_ );
+			}
 		} else if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Right) )
 		{
 			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
 			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, 0 );
+						if (currentLayer() == 4)
+			{
+				map_.setLifeTileBreak( pair.second, pair.first, 0 );
+			}
 
 		}
 		LvlWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
 		ToolWindow_->clear( sf::Color::Black );
 
-		for (int l=1; l<=4; l++)
-			map_.drawMap( l, *LvlWindow_ );
-		image_draw();
-		tool_draw();
+		map_draw() ;
+		image_draw() ;
+		tool_draw() ;
 
 		LvlWindow_->display();
 		TilWindow_->display();
@@ -201,7 +258,7 @@ void LEWindow::seekKeyEvent(sf::Event event)
 				map_.saveLevel( lvl_filename() );
 				break ;
 			case sf::Keyboard::R :
-				map_.loadMap( lvl_filename(), false );
+				map_.loadMap( lvl_filename() );
 				break ;
 			case sf::Keyboard::F1 :
 				setCurrentLayer( 1 );
@@ -217,6 +274,13 @@ void LEWindow::seekKeyEvent(sf::Event event)
 				break ;
 			case sf::Keyboard::F :
 				fillMap( );
+				break ;
+			case sf::Keyboard::A :
+				if (currentLive_ > 0)
+					currentLive_ -- ;
+				break ;
+			case sf::Keyboard::Z :
+				currentLive_ ++ ;
 				break ;
 			default :
 				break ;
@@ -241,6 +305,10 @@ void LEWindow::fillMap ()
 		for (int y=0; y<nbTile_H; y++){
 			pair.first = x ; pair.second = y ;
 			map_.changeTile( currentLayer(), pair, currentTile() );
+			if (currentLayer() == 4)
+			{
+				map_.setLifeTileBreak( pair.second, pair.first, currentLive_ );
+			}
 		}
 }
 
@@ -256,9 +324,17 @@ void LEWindow::seekLevelEvent( sf::Event event )
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			map_.changeTile( currentLayer(), pair, currentTile() );
+			if (currentLayer() == 4)
+			{
+				map_.setLifeTileBreak( pair.second, pair.first, currentLive_ );
+			}
 		} else if (event.mouseButton.button == sf::Mouse::Right)
 		{
 			map_.changeTile( currentLayer(), pair, 0 );
+			if (currentLayer() == 4)
+			{
+				map_.setLifeTileBreak( pair.second, pair.first, 0 );
+			}
 		}
 	}
 }

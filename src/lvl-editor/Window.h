@@ -42,6 +42,7 @@ public:
 	void fillMap();
 
 	// Draw the tile set on the window
+	void map_draw() ;
 	void image_draw() const;
 	void tool_draw() const;
 	// Close all windows
@@ -64,7 +65,8 @@ private:
 	sf::RenderWindow *LvlWindow_, *TilWindow_, *ToolWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
 	sf::Texture tileTexture_ , toolTexture_ ;
-	sf::Sprite  tileSprite_  , toolSprite_ ; 
+	sf::Sprite  tileSprite_  , toolSprite_ ;
+	sf::Font font_;
 	Map map_ ;
 };
 

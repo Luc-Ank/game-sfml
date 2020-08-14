@@ -60,7 +60,7 @@ void Map::setLifeTileBreak(int x,int y, int valeur)
     }
 }
 
-void Map::loadMap(std::string filename, bool life)
+void Map::loadMap(std::string filename)
 {
     std::fstream fin;
     int x = 0;
@@ -134,15 +134,12 @@ void Map::loadMap(std::string filename, bool life)
             tile4[x][y] = lignes[x+nbTile_H*3][y];
         }
     }
-    if (life)
+    std::cout << "Remplissage lifeTile4" << std::endl;
+    for (x=0; x < nbTile_H; x++)
     {
-        std::cout << "Remplissage lifeTile4" << std::endl;
-        for (x=0; x < nbTile_H; x++)
+        for (y=0; y < nbTile_W; y++)
         {
-            for (y=0; y < nbTile_W; y++)
-            {
-                lifeTile4[x][y] = lignes[x+nbTile_H*4][y];
-            }
+            lifeTile4[x][y] = lignes[x+nbTile_H*4][y];
         }
     }
     std::cout << "end loadmap " << std::endl;
@@ -321,6 +318,14 @@ void Map::saveLevel(std::string const filename) const
                 flux_level << tile4[y][x] << "," ;
             }
             flux_level << tile4[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << lifeTile4[y][x] << "," ;
+            }
+            flux_level << lifeTile4[y][nbTile_W-1] << std::endl ;
         }
         flux_level << std::endl ;
         std::cout << "Level saved in " << filename << std::endl ;

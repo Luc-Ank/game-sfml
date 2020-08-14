@@ -14,7 +14,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
-	ToolWindow_->create( sf::VideoMode(4*TILE_SIZE, TILE_SIZE), "Tool", SF_STYLE );
+	ToolWindow_->create( sf::VideoMode(5*TILE_SIZE, TILE_SIZE), "Tool", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 	ToolWindow_->setFramerateLimit( 60 );
@@ -359,8 +359,18 @@ void LEWindow::seekToolEvent( sf::Event event )
 {
 	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
-		int l_tmp = PairFromPosition( event.mouseButton.x - OFFSET_X, event.mouseButton.y - OFFSET_Y ).first;
-		setCurrentLayer( l_tmp + 1 );
+		int x = event.mouseButton.x, y = event.mouseButton.y ;
+		if ( x >= OFFSET_X && x <= OFFSET_X + 4*TILE_SIZE)	// if we click on one of the four layer
+		{
+			int l_tmp = PairFromPosition( x - OFFSET_X, y - OFFSET_Y ).first;
+			setCurrentLayer( l_tmp + 1 );
+		} else if ( x >= OFFSET_X + 4*TILE_SIZE && x <= OFFSET_X + 5*TILE_SIZE)
+		{
+			if ( y >= OFFSET_Y && y <= OFFSET_Y + TILE_SIZE / 2 )
+				currentLive_ ++ ;
+			else if (y >= OFFSET_Y + TILE_SIZE / 2 && y <= OFFSET_Y + TILE_SIZE)
+				currentLive_ -- ;
+		}
 	}
 }
 

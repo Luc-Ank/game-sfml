@@ -21,6 +21,8 @@ where :
 - `R` reload the map from the file
 - `F` fill the whole layer
 - `Esc` qui the application
+- `A`/`Z` increment / decrement the value of life for the layer 4
+
 
 On the tile seclector window, a left clic will select a tile (the selected one is framed).
 On the map window, a left click change the tile of the selected layer. A right clic delete the tile.

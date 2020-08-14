@@ -37,7 +37,7 @@ class Player
         Sprite getPlayerSprite(void) const;
 
     protected:
-        int life;
+        int playerLife,playerLifeMax;
         int invincibleTimer;
 
         int playerX,playerY;
@@ -55,14 +55,19 @@ class Player
 
         Texture playerTexture;
         Sprite playerSprite;
-        Texture swordTexture;
-        Sprite swordSprite;
-        Texture shieldTexture;
-        Sprite shieldSprite;
+        Texture daggerTexture;
+        Sprite daggerSprite;
+        Texture spearTexture;
+        Sprite spearSprite;
 
+        int daggerOn = 0;
+        int spearOn = 0;
+        int changeSpearState,changeDaggerState;
         int swordX,wordY,swordTimer,swordRotation;
         int shieldX,shieldY,shieldTimer,shieldRotation;
 
+        int startPlayerState;
+        
         const int TimeBetween2FramePlayer = 3;
         const int TimeBetween2FrameSword = 1;
         const int TimeBetween2FrameShield = 1;

@@ -1,13 +1,15 @@
-CC = g++
+CC = clang++
 CFLAGS = -c
 DEBUG = -Wall -Werror -Wextra
-THREAD = -pthread
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: levelWindow.o tileWindow.o
 
+debug: DEBUG += -g -fsanitize=address
+debug: all
+
 Window.o: Window.cpp Window.h
-	$(CC) -shared $(SFML) $(CFLAGS) $(THREAD) Window.cpp
+	$(CC) -shared $(SFML) $(DEBUG) $(CFLAGS) Window.cpp
 
 
 clean:

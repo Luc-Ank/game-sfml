@@ -1,27 +1,27 @@
-CC = g++
+CC = clang++
 CFLAGS = -c
 DEBUG = -Wall -Werror -Wextra
-THREAD = -pthread
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: game-sfml level-editor
 
+debug: DEBUG += -g -fsanitize=address
 debug: all
 
 game-sfml: test.o Level/level1.o 
-	$(CC) $(THREAD) test.o Map/map.o Level/level1.o Input/input.o Player/player.o Monster/monster.o -o game-sfml $(SFML)
+	$(CC) test.o Map/map.o Level/level1.o Input/input.o Player/player.o Monster/monster.o -o game-sfml $(SFML)
 
 test.o: test.cpp Level/level1.o 
-	$(CC) $(CFLAGS) $(THREAD) test.cpp $(SFML)
+	$(CC) $(CFLAGS) test.cpp
 
 clean:
-	\rm *.o game-sfml
+	rm *.o game-sfml
 
 level-editor: level-editor.o lvl-editor/Window.o Map/map.o
-	$(CC) $(THREAD) level-editor.o lvl-editor/Window.o Map/map.o -o level-editor $(SFML)
+	$(CC) $(DEBUG) level-editor.o lvl-editor/Window.o Map/map.o -o level-editor $(SFML)
 
 level-editor.o: level-editor.cpp
-	$(CC) $(THREAD) $(SFML) $(CFLAGS) level-editor.cpp
+	$(CC) $(DEBUG) $(CFLAGS) level-editor.cpp
 
 
 run: all

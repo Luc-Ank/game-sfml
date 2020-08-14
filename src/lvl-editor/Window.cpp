@@ -7,6 +7,7 @@
 
 LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 			   const std::string file, const std::string til):
+	// multiple_(false),
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
 	lvl_filename_(file), til_filename_(til),
 	currentLayer_(0)
@@ -120,7 +121,7 @@ void LEWindow::Run()
 		LvlWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
 
-		for (int l=0; l<4; l++)
+		for (int l=1; l<=4; l++)
 			map_.drawMap( l, *LvlWindow_ );
 		image_draw();
 
@@ -131,30 +132,56 @@ void LEWindow::Run()
 }
 
 
+
+
+
+
+
+
+
 void LEWindow::seekKeyEvent(sf::Event event)
 {
 	if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
 				|| (event.type == sf::Event::Closed) )
 	{
 		close_windows();
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
+	} else if (event.type == sf::Event::KeyPressed){
+		switch (event.key.code)
+		{
+			case sf::Keyboard::S :
+				map_.saveLevel( lvl_filename() );
+				break ;
+			case sf::Keyboard::R :
+				map_.loadMap( lvl_filename(), false );
+				break ;
+			case sf::Keyboard::F1 :
+				setCurrentLayer( 1 );
+				break ;
+			case sf::Keyboard::F2 :
+				setCurrentLayer( 2 );
+				break ;
+			case sf::Keyboard::F3 :
+				setCurrentLayer( 3 );
+				break ;
+			case sf::Keyboard::F4 :
+				setCurrentLayer( 4 );
+				break ;
+			case sf::Keyboard::LShift :
+				multiple_ = true ;
+				break ;
+			default :
+				break ;
+		}
+	} else if (event.type ==sf::Event::KeyReleased)
 	{
-		map_.saveLevel( lvl_filename() );
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R)
-	{
-		map_.loadMap( lvl_filename(), false );
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F1)
-	{
-		setCurrentLayer( 1 );
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F2)
-	{
-		setCurrentLayer( 2 );
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F3)
-	{
-		setCurrentLayer( 3 );
-	} else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F4)
-	{
-		setCurrentLayer( 4 );
+		switch (event.key.code)
+		{
+			case sf::Keyboard::LShift :
+				multiple_ = false ;
+				break ;
+			default :
+				break ;
+		}
 	}
 }
 

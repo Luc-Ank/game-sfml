@@ -51,6 +51,7 @@ public:
 
 private:
 	int currentLayer_, currentTile_ ;
+	// bool multiple_ ;
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
 	sf::Texture tileTexture_ ;

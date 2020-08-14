@@ -60,11 +60,11 @@ public:
 	pair_t posCurrentTile(bool) const ;
 
 private:
-	int currentLayer_, currentTile_ ;
+	int currentLayer_, currentTile_, currentLive_ ;
 	sf::RenderWindow *LvlWindow_, *TilWindow_, *ToolWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
-	sf::Texture tileTexture_ ;//, toolTexture_ ;
-	sf::Sprite  tileSprite_  ;//, toolSprite_ ; 
+	sf::Texture tileTexture_ , toolTexture_ ;
+	sf::Sprite  tileSprite_  , toolSprite_ ; 
 	Map map_ ;
 };
 

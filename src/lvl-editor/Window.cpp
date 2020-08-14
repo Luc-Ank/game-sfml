@@ -9,7 +9,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 			   const std::string file, const std::string til):
 	LvlWindow_(lvlWin), TilWindow_(tilWin), ToolWindow_(toolWin),
 	lvl_filename_(file), til_filename_(til),
-	currentLayer_(1)
+	currentLayer_(1), currentLive_(1)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
@@ -27,13 +27,13 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 	tileSprite_.setTexture( tileTexture_ );
 	tileSprite_.setPosition( 0.f, 0.f );
 
-	// if (!toolTexture_.loadFromFile( "lvl-editor/tool_backgroung.png" ))
-	// {
-	// 	std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
-	// 	exit( 1 );
-	// }
-	// toolSprite_.setTexture( toolTexture_ );
-	// toolSprite_.setPosition( 0.f, 0.f );
+	if (!toolTexture_.loadFromFile( "lvl-editor/tool_backgroung.png" ))
+	{
+		std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
+		exit( 1 );
+	}
+	toolSprite_.setTexture( toolTexture_ );
+	toolSprite_.setPosition( 0.f, 0.f );
 
 
 	// test if the level file doesn't exist
@@ -104,18 +104,7 @@ void LEWindow::image_draw() const
 
 void LEWindow::tool_draw() const
 {
-	sf::Texture toolTexture ;
-	sf::Sprite toolSprite ;
-	if (!toolTexture.loadFromFile( "lvl-editor/tool_backgroung.png" ))
-	{
-		std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
-		exit( 1 );
-	}
-	toolSprite.setTexture( toolTexture );
-	toolSprite.setPosition( 0.f, 0.f );
-
-	ToolWindow_->draw( toolSprite );
-
+	ToolWindow_->draw( toolSprite_ );
 
 	sf::RectangleShape rect( sf::Vector2f(TILE_SIZE_f-2.f, TILE_SIZE_f-2.f) );
 	rect.setFillColor( sf::Color::Transparent );

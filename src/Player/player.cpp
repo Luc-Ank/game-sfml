@@ -180,7 +180,26 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
         if (playerIsAttacking)
         {
             if (playerFrameNumber == playerFrameMax-1)
+            {
                 playerIsAttacking = 0;
+                for (int i = 0; i < monsterNumber; i++)
+                {
+                    if (monster[i].getMonsterIsAlive() == 1)
+                        monster[i].setIsGettingDamage(0);
+                }
+            }
+            for (int i = 0; i < monsterNumber; i++)
+            {
+                if(monster[i].getMonsterIsAlive() == 1 && monster[i].getIsGettingDamage() == 0)
+                {
+                    if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
+                    {
+                        int dmg = 20*daggerOn + 10*spearOn + 2*(1-daggerOn)*(1-spearOn);
+                        monster[i].setMonsterLife(monster[i].getMonsterLife() - dmg);
+                        monster[i].setIsGettingDamage(1);
+                    }
+                }
+            }
         }
         else
         {
@@ -635,15 +654,18 @@ void Player::playerMonsterCollision(Monster monster[], Input input, int monsterN
     playerSprite.setPosition(Vector2f(playerX,playerY));
     for (int i= 0; i < monsterNumber; i++)
     {
-        //if(playerSprite.getGlobalBounds().intersects(monster[i].getMonsterSprite().getGlobalBounds()))
-        if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
+        if (monster[i].getMonsterIsAlive())
         {
-            monster[i].setMonsterStand(0);
-            playerCollision = 1;
-        }
-        else
-        {
-            monster[i].setMonsterStand(1);
+            //if(playerSprite.getGlobalBounds().intersects(monster[i].getMonsterSprite().getGlobalBounds()))
+            if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
+            {
+                monster[i].setMonsterStand(0);
+                playerCollision = 1;
+            }
+            else
+            {
+                monster[i].setMonsterStand(1);
+            }
         }
     }
     if(playerCollision)

@@ -22,6 +22,10 @@ using namespace sf;
 #define PLAYERW 64
 #define START_PLAYER_WALK 7
 #define PLAYER_FRAME_MAX 7
+#define START_PlAYER_ATTACK_SPEAR 3
+#define PlAYER_FRAME_ATTACK_SPEAR 8
+#define START_PlAYER_ATTACK_DAGGER 11
+#define PlAYER_FRAME_ATTACK_DAGGER 6
 
 Player::Player()
 {
@@ -33,26 +37,27 @@ Player::Player()
     {
         playerSprite.setTexture(playerTexture);
     }
-    /*if(!swordTexture.loadFromFile("Images/sword.png"))
+    if(!daggerTexture.loadFromFile("Images/playerDagger.png"))
     {
-        std::cout << "Err chargement de l'image de l'epée" << std::endl;
+        std::cout << "Err chargement de l'image de l'dagger" << std::endl;
     }
     else
     {
-        swordSprite.setTexture(swordTexture);
+        daggerSprite.setTexture(daggerTexture);
     }
-    if(!shieldTexture.loadFromFile("Images/shield.png"))
+    if(!spearTexture.loadFromFile("Images/playerSpear.png"))
     {
-        std::cout << "Err chargement de l'image du shield" << std::endl;
+        std::cout << "Err chargement de l'image du spear" << std::endl;
     }
     else
     {
-        shieldSprite.setTexture(shieldTexture);
-    }*/
+        spearSprite.setTexture(spearTexture);
+    }
 
     ghostPlayerX = 0;
     ghostPlayerY = 0;
-    life = 100;
+    playerLife = 100;
+    playerLifeMax = 100;
     invincibleTimer = 0;
     playerX = 0;
     playerY = 0;
@@ -85,9 +90,9 @@ void Player::drawPlayer(RenderWindow &window)
     }
     else
     {
-        if(playerEtat != IDLE)
+        if(playerEtat != IDLE || playerIsAttacking == 1)
         {
-            playerFrameTimer -= 1 + (playerIsRunning*2);
+            playerFrameTimer -= 1 + (playerIsRunning*2) + (playerIsAttacking*3);
         }
         else
         {
@@ -109,7 +114,7 @@ void Player::drawPlayer(RenderWindow &window)
     else
     {
         playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
-        (playerDirection+START_PLAYER_WALK)*playerH,
+        (playerDirection+startPlayerState)*playerH,
         playerW,playerH));
         window.draw(playerSprite);  
         RectangleShape shape(Vector2f(playerW,playerH));//hitboxplayer
@@ -118,12 +123,24 @@ void Player::drawPlayer(RenderWindow &window)
         shape.setOutlineThickness(2);
         shape.setOutlineColor(Color(250,0,0));
         window.draw(shape);
+
+        RectangleShape playerLifeBar(Vector2f(PLAYERW,8));//playerLifeBar
+        RectangleShape playerLifeBarInside(Vector2f(PLAYERW*(playerLife/playerLifeMax),8));
+        playerLifeBarInside.setFillColor(Color::Red);
+        playerLifeBarInside.setPosition(playerX,playerY);
+        playerLifeBar.setFillColor(Color::Transparent);
+        playerLifeBar.setPosition(playerX,playerY);
+        playerLifeBar.setOutlineThickness(2);
+        playerLifeBar.setOutlineColor(Color(0,0,0));
+        window.draw(playerLifeBar);
+        window.draw(playerLifeBarInside);
     }
 }
 
 void Player::initPlayer()
 {
-    life = 100;
+    playerLife = 100;
+    playerLifeMax = 100;
     invincibleTimer = 0;
 
     playerDirection = playerDOWN;
@@ -133,6 +150,10 @@ void Player::initPlayer()
     playerFrameTimer = TimeBetween2FramePlayer;
     playerFrameMax = PLAYER_FRAME_MAX;
 
+    daggerOn = 0;
+    spearOn = 0;
+    changeSpearState = 1;
+    changeDaggerState = 1;
     playerX = 0;
     playerY = 0;
     prevPlayerX = 0;
@@ -156,79 +177,153 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
 
         ghostPlayerX = 0;
         ghostPlayerY = 0;
-
-        if(input.getButton().run)
-            playerIsRunning = 5;
+        if (playerIsAttacking)
+        {
+            if (playerFrameNumber == playerFrameMax-1)
+                playerIsAttacking = 0;
+        }
         else
-            playerIsRunning = 0;
-
-        if(input.getButton().left == true)
         {
-            ghostPlayerX -= playerSpeed + playerIsRunning;
-            playerDirection = playerLEFT;
-
-            if(playerEtat != playerWALK)
+            if(input.getButton().run)
+                playerIsRunning = 5;
+            else
+                playerIsRunning = 0;
+            if (input.getButton().switchDagger == true)
             {
-                playerEtat = playerWALK;
-                playerFrameNumber = 0;
-                playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = PLAYER_FRAME_MAX;
+                if (changeDaggerState)
+                {
+                    if (!daggerOn)
+                    {
+                        playerSprite.setTexture(daggerTexture);
+                        daggerOn = 1;
+                        spearOn = 0;
+                    }
+                    else
+                    {
+                        playerSprite.setTexture(playerTexture);
+                        daggerOn = 0;
+                    }
+                    changeDaggerState = 0;
+                }
             }
-        }
-        else if(input.getButton().right == true)
-        {
-            ghostPlayerX += playerSpeed + playerIsRunning;
-            playerDirection = playerRIGHT;
-
-            if(playerEtat != playerWALK)
+            else if (input.getButton().switchSpear == true)
             {
-                playerEtat = playerWALK;
-                playerFrameNumber = 0;
-                playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = PLAYER_FRAME_MAX;
-            }            
-        }
-        else if(input.getButton().up == true)
-        {
-            ghostPlayerY -= playerSpeed + playerIsRunning;
-            playerDirection = playerUP;
-
-            if(playerEtat != playerWALK)
-            {
-                playerEtat = playerWALK;
-                playerFrameNumber = 0;
-                playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = PLAYER_FRAME_MAX;
-            }            
-        }
-        else if(input.getButton().down == true)
-        {
-            ghostPlayerY += playerSpeed + playerIsRunning;
-            playerDirection = playerDOWN;
-
-            if(playerEtat != playerWALK)
-            {
-                playerEtat = playerWALK;
-                playerFrameNumber = 0;
-                playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = PLAYER_FRAME_MAX;
-            }            
-        }
-        else if(input.getButton().right == false && input.getButton().left == false &&
-                input.getButton().up == false && input.getButton().down == false)
-        {
-            if (playerEtat != IDLE)
-            {
-                playerEtat = IDLE;
-                playerFrameNumber = 0;
-                playerFrameTimer = TimeBetween2FramePlayer;
-                playerFrameMax = PLAYER_FRAME_MAX;
+                if (changeSpearState)
+                {
+                    if(!spearOn)
+                    {
+                        playerSprite.setTexture(spearTexture);
+                        spearOn = 1;
+                        daggerOn = 0;
+                    }
+                    else
+                    {
+                        playerSprite.setTexture(playerTexture);
+                        spearOn = 0;
+                    }
+                    changeSpearState = 0;
+                }
             }
-        }
+            else if (input.getButton().switchSpear == false && input.getButton().switchDagger == false)
+            {
+                changeSpearState = 1;
+                changeDaggerState = 1;
+                
+            }
+            if(input.getButton().left == true)
+            {
+                ghostPlayerX -= playerSpeed + playerIsRunning;
+                playerDirection = playerLEFT;
 
-        playerMapCollision(map);
-        playerMonsterCollision(monster, input, monsterNumber);
-        playerCenterScrolling(map);
+                if(playerEtat != playerWALK)
+                {
+                    playerEtat = playerWALK;
+                    playerFrameNumber = 0;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PLAYER_FRAME_MAX;
+                }
+            }
+            else if(input.getButton().right == true)
+            {
+                ghostPlayerX += playerSpeed + playerIsRunning;
+                playerDirection = playerRIGHT;
+
+                if(playerEtat != playerWALK)
+                {
+                    playerEtat = playerWALK;
+                    playerFrameNumber = 0;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PLAYER_FRAME_MAX;
+                }            
+            }
+            else if(input.getButton().up == true)
+            {
+                ghostPlayerY -= playerSpeed + playerIsRunning;
+                playerDirection = playerUP;
+
+                if(playerEtat != playerWALK)
+                {
+                    playerEtat = playerWALK;
+                    playerFrameNumber = 0;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PLAYER_FRAME_MAX;
+                }            
+            }
+            else if(input.getButton().down == true)
+            {
+                ghostPlayerY += playerSpeed + playerIsRunning;
+                playerDirection = playerDOWN;
+
+                if(playerEtat != playerWALK)
+                {
+                    playerEtat = playerWALK;
+                    playerFrameNumber = 0;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PLAYER_FRAME_MAX;
+                }            
+            }
+            else if(input.getButton().right == false && input.getButton().left == false &&
+                    input.getButton().up == false && input.getButton().down == false)
+            {
+                if (playerEtat != IDLE)
+                {
+                    playerEtat = IDLE;
+                    playerFrameNumber = 0;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PLAYER_FRAME_MAX;
+                }
+            }
+            startPlayerState = START_PLAYER_WALK;
+            //attack
+            if (input.getButton().attack == true)
+            {
+                playerIsAttacking = 1;
+                playerFrameNumber = 0;
+                if(daggerOn)
+                {
+                    startPlayerState = START_PlAYER_ATTACK_DAGGER;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PlAYER_FRAME_ATTACK_DAGGER;
+                }
+                else if(spearOn)
+                {
+                    startPlayerState = START_PlAYER_ATTACK_SPEAR;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PlAYER_FRAME_ATTACK_SPEAR;
+                }
+                else
+                {
+                    startPlayerState = START_PlAYER_ATTACK_DAGGER;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PlAYER_FRAME_ATTACK_DAGGER;                    
+                }
+                
+            }
+            //
+            playerMapCollision(map);
+            playerMonsterCollision(monster, input, monsterNumber);
+            //playerCenterScrolling(map);
+        }
     }
 
     if (playerDeathTimer > 0)

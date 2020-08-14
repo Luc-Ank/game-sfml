@@ -22,7 +22,7 @@ using namespace sf;
 
 class Input
 {
-    struct Button{bool up,down,right,left,attack,run,enter,protect;};
+    struct Button{bool up,down,right,left,attack,run,enter,protect,switchDagger,switchSpear;};
 
     public:
         Input();
@@ -37,6 +37,6 @@ class Input
         Event event;
         Button button;
 
-        enum{up,down,right,left,attack,run,enter,protect};
+        enum{up,down,right,left,attack,run,enter,protect,switchDagger,switchSpear};
 };
 #endif

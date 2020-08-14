@@ -22,6 +22,7 @@ public:
 	// Constructor
 	LEWindow(sf::RenderWindow *, sf::RenderWindow *,
 		   const std::string, const std::string);
+	~LEWindow();
 
 	// Accessors
 	std::string lvl_filename() const;
@@ -51,7 +52,6 @@ public:
 
 private:
 	int currentLayer_, currentTile_ ;
-	bool multiple_ ;
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
 	sf::Texture tileTexture_ ;

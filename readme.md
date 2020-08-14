@@ -23,3 +23,5 @@ where :
 
 On the tile seclector window, a left clic will select a tile (the selected one is framed).
 On the map window, a left click change the tile of the selected layer. A right clic delete the tile.
+
+To add/remove many tiles at a time, keep `LShift` pressed and keep the left or right button clicked.

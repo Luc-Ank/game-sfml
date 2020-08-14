@@ -7,17 +7,15 @@
 
 LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 			   const std::string file, const std::string til):
-	// multiple_(false),
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
 	lvl_filename_(file), til_filename_(til),
-	currentLayer_(1), multiple_(false)
+	currentLayer_(1)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 
-	multiple_ = false ;
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
 	{
@@ -54,6 +52,11 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	}
 
 	map_.loadMap( file, false );
+}
+
+
+LEWindow::~LEWindow(){
+	// std::cout << "Destruction" << std::endl ;
 }
 
 std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
@@ -119,7 +122,18 @@ void LEWindow::Run()
 			seekKeyEvent( event );
 			seekTileEvent( event );
 		}
+		if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left) )
+		{
+			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
+			std::pair<int,int> pair = PairFromPosition( position.x, position.y );
+			map_.changeTile( currentLayer(), pair, currentTile() );
+		} else if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Right) )
+		{
+			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
+			std::pair<int,int> pair = PairFromPosition( position.x, position.y );
+			map_.changeTile( currentLayer(), pair, 0 );
 
+		}
 		LvlWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
 
@@ -168,23 +182,18 @@ void LEWindow::seekKeyEvent(sf::Event event)
 			case sf::Keyboard::F4 :
 				setCurrentLayer( 4 );
 				break ;
-			case sf::Keyboard::LShift :
-				multiple_ = true ;
-				break ;
 			default :
 				break ;
 		}
-	} else if (event.type ==sf::Event::KeyReleased)
+	} /*else if (event.type ==sf::Event::KeyReleased)
 	{
 		switch (event.key.code)
 		{
-			case sf::Keyboard::LShift :
-				multiple_ = false ;
-				break ;
+
 			default :
 				break ;
 		}
-	}
+	}*/
 }
 
 
@@ -202,10 +211,6 @@ void LEWindow::seekLevelEvent( sf::Event event )
 			map_.changeTile( currentLayer(), pair, 0 );
 		}
 	}
-	// if (multiple_)
-	// {
-	// 	map_.changeTile( currentLayer(), pair, currentTile() );
-	// }
 }
 
 

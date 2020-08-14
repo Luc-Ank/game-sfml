@@ -31,6 +31,7 @@ void level1::setMonster()
 	monster[0].initMonster(224,288);
 	monster[1].initMonster(512,224);
 	monster[2].initMonster(288,32);
+	monster[3].initMonster(32,288);
 }
 
 void level1::setTexture()
@@ -51,6 +52,7 @@ void level1::draw()
 	monster[0].drawMonster(*window);
 	monster[1].drawMonster(*window);
 	monster[2].drawMonster(*window);
+	monster[3].drawMonster(*window);
 	//window->draw(cercle);
 	//window->draw(rectangle);
 	window->draw(sprite_perso);
@@ -58,13 +60,13 @@ void level1::draw()
 
 void level1::run_event(Input &input)
 {
-	int monsterNumber = 3;
+	int monsterNumber = 4;
 	input.gestionInputs(*window);
 	player.updatePlayer(input, map,monster,monsterNumber);
-	monster[0].updateMonster("nul",map);
+	monster[0].updateMonster("nul",map,monster,monsterNumber,0);
 	if (i==0)
 	{
-		monster[1].updateMonster("right",map);
+		monster[1].updateMonster("right",map,monster,monsterNumber,1);
 		if(monster[1].getMonsterX() > 768)
 		{
 			i = 1;
@@ -72,7 +74,7 @@ void level1::run_event(Input &input)
 	}
 	else
 	{
-		monster[1].updateMonster("left",map);
+		monster[1].updateMonster("left",map,monster,monsterNumber,1);
 		if(monster[1].getMonsterX() < 512)
 		{
 			i = 0;
@@ -80,7 +82,7 @@ void level1::run_event(Input &input)
 	}
 	if (j==0)
 	{
-		monster[2].updateMonster("down",map);
+		monster[2].updateMonster("down",map,monster,monsterNumber,2);
 		if(monster[2].getMonsterY() > 256)
 		{
 			j = 1;
@@ -88,10 +90,11 @@ void level1::run_event(Input &input)
 	}
 	else
 	{
-		monster[2].updateMonster("up",map);
+		monster[2].updateMonster("up",map,monster,monsterNumber,2);
 		if(monster[2].getMonsterY() < 32)
 		{
 			j = 0;
 		}		
-	}			
+	}
+	monster[3].updateMonster("right",map,monster,monsterNumber,3);		
 }

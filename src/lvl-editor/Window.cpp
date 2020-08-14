@@ -96,7 +96,7 @@ void LEWindow::image_draw() const
 	rect.setFillColor( sf::Color::Transparent );
 	rect.setOutlineThickness( 2.f );
 	rect.setOutlineColor( sf::Color::White );
-	std::pair<int,int> pair = posCurrentTile( true ) ;
+	pair_t pair = posCurrentTile( true ) ;
 	rect.setPosition( (float) pair.first * TILE_SIZE_f, (float) pair.second * TILE_SIZE_f );
 	TilWindow_->draw( rect );
 }
@@ -121,7 +121,7 @@ void LEWindow::tool_draw() const
 	rect.setFillColor( sf::Color::Transparent );
 	rect.setOutlineThickness( 2.f );
 	rect.setOutlineColor( sf::Color::White );
-	std::pair<int,int> pair = posCurrentTile( true ) ;
+	pair_t pair = posCurrentTile( true ) ;
 	rect.setPosition( ((float) currentLayer() - 1.f) * TILE_SIZE_f +1.f, 1.f );
 	ToolWindow_->draw( rect );
 }
@@ -166,12 +166,12 @@ void LEWindow::Run()
 		if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left) )
 		{
 			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
-			std::pair<int,int> pair = PairFromPosition( position.x, position.y );
+			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, currentTile() );
 		} else if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Right) )
 		{
 			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
-			std::pair<int,int> pair = PairFromPosition( position.x, position.y );
+			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, 0 );
 
 		}
@@ -226,6 +226,9 @@ void LEWindow::seekKeyEvent(sf::Event event)
 			case sf::Keyboard::F4 :
 				setCurrentLayer( 4 );
 				break ;
+			case sf::Keyboard::F :
+				fillMap( );
+				break ;
 			default :
 				break ;
 		}
@@ -242,9 +245,23 @@ void LEWindow::seekKeyEvent(sf::Event event)
 
 
 
+void LEWindow::fillMap ()
+{
+	pair_t pair;
+	for (int x=0; x<nbTile_W; x++)
+		for (int y=0; y<nbTile_H; y++){
+			pair.first = x ; pair.second = y ;
+			map_.changeTile( currentLayer(), pair, currentTile() );
+		}
+}
+
+
+
+
+
 void LEWindow::seekLevelEvent( sf::Event event )
 {
-	std::pair<int,int> pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
+	pair_t pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
 		if (event.mouseButton.button == sf::Mouse::Left)
@@ -286,25 +303,25 @@ void LEWindow::seekToolEvent( sf::Event event )
 
 
 
-std::pair<int,int> LEWindow::PairFromPosition(int x, int y) const
+pair_t LEWindow::PairFromPosition(int x, int y) const
 {
-	std::pair<int,int> indice ;
+	pair_t indice ;
 	indice.first  = x / TILE_SIZE ;
 	indice.second = y / TILE_SIZE ;
 	return indice ;
 }
 
 
-int LEWindow::indiceFromPair( std::pair<int,int> indice, bool tile ) const
+int LEWindow::indiceFromPair( pair_t indice, bool tile ) const
 {
 	int fact = (tile) ? nbTileT_W : nbTile_W ;
 	return indice.first + fact*indice.second ;
 }
 
 
-std::pair<int,int> LEWindow::posCurrentTile(bool tile) const
+pair_t LEWindow::posCurrentTile(bool tile) const
 {
-	std::pair<int,int> pair ;
+	pair_t pair ;
 	pair.first  = (tile) ? currentTile()%nbTileT_W : currentTile()%nbTile_W ;
 	pair.second = (tile) ? currentTile()/nbTileT_W : currentTile()/nbTile_W ;
 	return pair ;

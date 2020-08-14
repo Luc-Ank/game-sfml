@@ -19,6 +19,7 @@ where :
 - `F1` to `F4` select the layer
 - `S` save the map
 - `R` reload the map from the file
+- `F` fill the whole layer
 - `Esc` qui the application
 
 On the tile seclector window, a left clic will select a tile (the selected one is framed).

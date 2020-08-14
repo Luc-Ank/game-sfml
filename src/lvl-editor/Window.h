@@ -18,6 +18,9 @@
 #define OFFSET_X	0
 #define OFFSET_Y	0
 
+
+using pair_t = std::pair<int,int>;
+
 class LEWindow
 {
 public:
@@ -36,6 +39,8 @@ public:
 	void setCurrentLayer(int);
 	void setCurrentTile(int);
 
+	void fillMap();
+
 	// Draw the tile set on the window
 	void image_draw() const;
 	void tool_draw() const;
@@ -50,9 +55,9 @@ public:
 	void seekLevelEvent(sf::Event) ;
 	void seekTileEvent(sf::Event) ;
 	void seekToolEvent(sf::Event) ;
-	std::pair<int,int> PairFromPosition(int, int) const ;
-	int indiceFromPair(std::pair<int,int>, bool) const ;
-	std::pair<int,int> posCurrentTile(bool) const ;
+	pair_t PairFromPosition(int, int) const ;
+	int indiceFromPair(pair_t, bool) const ;
+	pair_t posCurrentTile(bool) const ;
 
 private:
 	int currentLayer_, currentTile_ ;

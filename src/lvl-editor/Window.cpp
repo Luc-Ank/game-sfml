@@ -5,25 +5,36 @@
 #define SF_STYLE sf::Style::Titlebar | sf::Style::Close
 
 
-LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
+LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::RenderWindow *toolWin,
 			   const std::string file, const std::string til):
-	LvlWindow_(lvlWin), TilWindow_(tilWin),
+	LvlWindow_(lvlWin), TilWindow_(tilWin), ToolWindow_(toolWin),
 	lvl_filename_(file), til_filename_(til),
 	currentLayer_(1)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
+	ToolWindow_->create( sf::VideoMode(4*TILE_SIZE, TILE_SIZE), "Tool", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
+	ToolWindow_->setFramerateLimit( 60 );
 
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
 	{
-		std::cerr << "Fail to load texture" << std::endl ;
+		std::cerr << "Fail to load texture " << til_filename() << std::endl ;
 		exit( 1 );
 	}
 	tileSprite_.setTexture( tileTexture_ );
 	tileSprite_.setPosition( 0.f, 0.f );
+
+	// if (!toolTexture_.loadFromFile( "lvl-editor/tool_backgroung.png" ))
+	// {
+	// 	std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
+	// 	exit( 1 );
+	// }
+	// toolSprite_.setTexture( toolTexture_ );
+	// toolSprite_.setPosition( 0.f, 0.f );
+
 
 	// test if the level file doesn't exist
 	if ( (access( file.c_str(), R_OK|W_OK )) == -1)
@@ -91,6 +102,31 @@ void LEWindow::image_draw() const
 }
 
 
+void LEWindow::tool_draw() const
+{
+	sf::Texture toolTexture ;
+	sf::Sprite toolSprite ;
+	if (!toolTexture.loadFromFile( "lvl-editor/tool_backgroung.png" ))
+	{
+		std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
+		exit( 1 );
+	}
+	toolSprite.setTexture( toolTexture );
+	toolSprite.setPosition( 0.f, 0.f );
+
+	ToolWindow_->draw( toolSprite );
+
+
+	sf::RectangleShape rect( sf::Vector2f(TILE_SIZE_f-2.f, TILE_SIZE_f-2.f) );
+	rect.setFillColor( sf::Color::Transparent );
+	rect.setOutlineThickness( 2.f );
+	rect.setOutlineColor( sf::Color::White );
+	std::pair<int,int> pair = posCurrentTile( true ) ;
+	rect.setPosition( ((float) currentLayer() - 1.f) * TILE_SIZE_f +1.f, 1.f );
+	ToolWindow_->draw( rect );
+}
+
+
 
 void LEWindow::close_windows() const
 {
@@ -98,6 +134,8 @@ void LEWindow::close_windows() const
 		LvlWindow_->close();
 	if (TilWindow_->isOpen())
 		TilWindow_->close();
+	if (ToolWindow_->isOpen())
+		ToolWindow_->close();
 }
 
 
@@ -120,6 +158,11 @@ void LEWindow::Run()
 			seekKeyEvent( event );
 			seekTileEvent( event );
 		}
+		while (ToolWindow_->pollEvent( event ))
+		{
+			seekKeyEvent( event );
+			seekToolEvent( event );
+		}
 		if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left) )
 		{
 			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
@@ -134,13 +177,16 @@ void LEWindow::Run()
 		}
 		LvlWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
+		ToolWindow_->clear( sf::Color::Black );
 
 		for (int l=1; l<=4; l++)
 			map_.drawMap( l, *LvlWindow_ );
 		image_draw();
+		tool_draw();
 
 		LvlWindow_->display();
 		TilWindow_->display();
+		ToolWindow_->display();
 
 	}
 }
@@ -225,6 +271,18 @@ void LEWindow::seekTileEvent( sf::Event event )
 		}*/
 	}
 }
+
+
+void LEWindow::seekToolEvent( sf::Event event )
+{
+	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+	{
+		int l_tmp = PairFromPosition( event.mouseButton.x - OFFSET_X, event.mouseButton.y - OFFSET_Y ).first;
+		setCurrentLayer( l_tmp + 1 );
+	}
+}
+
+
 
 
 

@@ -15,12 +15,14 @@
 #define nbTileT_W	10
 #define TILE_SIZE	32
 #define TILE_SIZE_f	32.f
+#define OFFSET_X	0
+#define OFFSET_Y	0
 
 class LEWindow
 {
 public:
 	// Constructor
-	LEWindow(sf::RenderWindow *, sf::RenderWindow *,
+	LEWindow(sf::RenderWindow *, sf::RenderWindow *, sf::RenderWindow *,
 		   const std::string, const std::string);
 	~LEWindow();
 
@@ -36,6 +38,7 @@ public:
 
 	// Draw the tile set on the window
 	void image_draw() const;
+	void tool_draw() const;
 	// Close all windows
 	void close_windows() const;
 
@@ -46,16 +49,17 @@ public:
 	void seekKeyEvent(sf::Event) ;
 	void seekLevelEvent(sf::Event) ;
 	void seekTileEvent(sf::Event) ;
+	void seekToolEvent(sf::Event) ;
 	std::pair<int,int> PairFromPosition(int, int) const ;
 	int indiceFromPair(std::pair<int,int>, bool) const ;
 	std::pair<int,int> posCurrentTile(bool) const ;
 
 private:
 	int currentLayer_, currentTile_ ;
-	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
+	sf::RenderWindow *LvlWindow_, *TilWindow_, *ToolWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
-	sf::Texture tileTexture_ ;
-	sf::Sprite  tileSprite_; 
+	sf::Texture tileTexture_ ;//, toolTexture_ ;
+	sf::Sprite  tileSprite_  ;//, toolSprite_ ; 
 	Map map_ ;
 };
 

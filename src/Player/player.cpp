@@ -187,19 +187,21 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                     if (monster[i].getMonsterIsAlive() == 1)
                         monster[i].setIsGettingDamage(0);
                 }
+                map.setTileIsGettingDamage(0);
             }
+            int dmg = 20*daggerOn + 10*spearOn + 2*(1-daggerOn)*(1-spearOn);
             for (int i = 0; i < monsterNumber; i++)
             {
                 if(monster[i].getMonsterIsAlive() == 1 && monster[i].getIsGettingDamage() == 0)
                 {
                     if (Collision::PixelPerfectTest(playerSprite, monster[i].getMonsterSprite()))
                     {
-                        int dmg = 20*daggerOn + 10*spearOn + 2*(1-daggerOn)*(1-spearOn);
                         monster[i].setMonsterLife(monster[i].getMonsterLife() - dmg);
                         monster[i].setIsGettingDamage(1);
                     }
                 }
             }
+            playerAttackTile(map,dmg);
         }
         else
         {
@@ -576,6 +578,16 @@ void Player::playerMapCollision(Map & map)
                     break;
                 }
             }
+            else if(map.getTileBreak(ny+i,nx+2) == breakMUR1||map.getTileBreak(ny+i,nx+2) == breakMUR2)
+            {
+                testcol = map.getSpriteBreak(ny+i,nx+2);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerX = 0;
+                    break;
+                }
+            }
         }
     }
     else if(ghostPlayerX < 0)
@@ -591,6 +603,16 @@ void Player::playerMapCollision(Map & map)
                     ghostPlayerX = 0;
                     break;
                 }
+            }
+            else if (map.getTileBreak(ny+i,nx) == breakMUR1 || map.getTileBreak(ny+i,nx) == breakMUR2)
+            {
+                testcol = map.getSpriteBreak(ny+i,nx);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerX = 0;
+                    break;
+                }                
             }
         }
     }
@@ -608,13 +630,23 @@ void Player::playerMapCollision(Map & map)
                     break;
                 }
             }
+            else if(map.getTileBreak(ny+2,nx+i) == breakMUR1 || map.getTileBreak(ny+2,nx+i) == breakMUR2)
+            {
+                testcol = map.getSpriteBreak(ny+2,nx+i);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerY = 0;
+                    break;
+                }                
+            }
         }
     }
     else if(ghostPlayerY < 0)
     {
         for (int i=0; i < Htest ; i++)
         {
-            if (map.getTileCollision(ny,nx+i) == MUR1)
+            if (map.getTileCollision(ny,nx+i) == MUR1 )
             {
                 testcol = map.getSprite(ny,nx+i);
                 playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
@@ -623,6 +655,16 @@ void Player::playerMapCollision(Map & map)
                     ghostPlayerY = 0;
                     break;
                 }
+            }
+            else if(map.getTileBreak(ny,nx+i) == breakMUR1 || map.getTileBreak(ny,nx+i) == breakMUR2)
+            {
+                testcol = map.getSpriteBreak(ny,nx+i);
+                playerSprite.setPosition(Vector2f(playerX+ghostPlayerX,playerY+ghostPlayerY));
+                if(Collision::PixelPerfectTest(playerSprite,testcol))
+                {
+                    ghostPlayerY = 0;
+                    break;
+                }                
             }
         }
     }
@@ -679,4 +721,85 @@ void Player::playerMonsterCollision(Monster monster[], Input input, int monsterN
 
         playerSprite.setPosition(Vector2f(playerX,playerY));
     }    
+}
+
+void Player::playerAttackTile(Map &map,int tiledmg)
+{
+    if(map.getTileIsGettingDamage() == 0)
+    {
+        Sprite testcol;
+        int Wtest = (PLAYERW/Tile_Size)+1;
+        int Htest = (PLAYERH/Tile_Size)+1;
+        int nx,ny;
+        nx = (playerX)/Tile_Size;
+        ny = (playerY)/Tile_Size;
+        if(playerDirection == playerRIGHT)
+        {
+            for (int i=0; i < Wtest ; i++)
+            {
+                if (map.getTileBreak(ny+i,nx+2) == breakMUR1 || map.getTileBreak(ny+i,nx+2) == breakMUR2)
+                {
+                    testcol = map.getSpriteBreak(ny+i,nx+2);
+                    playerSprite.setPosition(Vector2f(playerX,playerY));
+                    if(Collision::PixelPerfectTest(playerSprite,testcol))
+                    {
+                        map.setLifeTileBreak(ny+i,nx+2, map.getLifeTileBreak(ny+i,nx+2)-tiledmg );
+                        map.setTileIsGettingDamage(1);
+                        break;
+                    }
+                }
+            }
+        }
+        else if(playerDirection == playerLEFT)
+        {
+            for (int i=0; i < Wtest ; i++)
+            {
+                if (map.getTileBreak(ny+i,nx) == breakMUR1|| map.getTileBreak(ny+i,nx) == breakMUR2)
+                {
+                    testcol = map.getSpriteBreak(ny+i,nx);
+                    playerSprite.setPosition(Vector2f(playerX,playerY));
+                    if(Collision::PixelPerfectTest(playerSprite,testcol))
+                    {
+                        map.setLifeTileBreak(ny+i,nx, map.getLifeTileBreak(ny+i,nx)-tiledmg );
+                        map.setTileIsGettingDamage(1);
+                        break;
+                    }
+                }
+            }
+        }
+        if(playerDirection == playerDOWN)
+        {
+            for (int i=0; i < Htest ; i++)
+            {
+                if (map.getTileBreak(ny+2,nx+i) == breakMUR1 || map.getTileBreak(ny+2,nx+i) == breakMUR2)
+                {
+                    testcol = map.getSpriteBreak(ny+2,nx+i);
+                    playerSprite.setPosition(Vector2f(playerX,playerY));
+                    if(Collision::PixelPerfectTest(playerSprite,testcol))
+                    {
+                        map.setLifeTileBreak(ny+2,nx+i, map.getLifeTileBreak(ny+2,nx+i)-tiledmg );
+                        map.setTileIsGettingDamage(1);
+                        break;
+                    }
+                }
+            }
+        }
+        else if(playerDirection == playerUP)
+        {
+            for (int i=0; i < Htest ; i++)
+            {
+                if (map.getTileBreak(ny,nx+i) == breakMUR1)
+                {
+                    testcol = map.getSpriteBreak(ny,nx+i);
+                    playerSprite.setPosition(Vector2f(playerX,playerY));
+                    if(Collision::PixelPerfectTest(playerSprite,testcol))
+                    {
+                        map.setLifeTileBreak(ny,nx+i, map.getLifeTileBreak(ny,nx+i)-tiledmg );
+                        map.setTileIsGettingDamage(1);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }

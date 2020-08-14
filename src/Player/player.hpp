@@ -33,6 +33,7 @@ class Player
         void playerCenterScrolling(Map &map);
         void playerMapCollision(Map &map);
         void playerMonsterCollision(Monster monster[], Input input, int monsterNumber);
+        void playerAttackTile(Map &map, int tiledmg);
 
         Sprite getPlayerSprite(void) const;
 

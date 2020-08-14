@@ -40,11 +40,20 @@ class Monster
         int getGhostMonsterY(void) const;
         bool getMonsterStand(void) const;
         Sprite getMonsterSprite(void) const;
+        int getMonsterLife(void) const;
+        int getIsGettingDamage(void) const;
+        int getMonsterIsAlive(void) const;
 
         void setMonsterStand(int valeur);
+        void setMonsterLife(int valeur);
+        void setIsGettingDamage(int valeur);
+        void setMonsterIsAlive(int valeur);
 
     protected:
         int monsterLife,monsterLifeMax;
+        int isGettingDamage;
+        int monsterIsAlive;
+        int monsterDeadAnimation;
 
         int monsterX,monsterY;
         int monsterW,monsterH;

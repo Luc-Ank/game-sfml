@@ -10,9 +10,12 @@ using namespace sf;
 
 #define START_MONSTER_WALK 7
 #define MONSTER_FRAME_MAX 7
+#define START_MONSTER_DEAD 20
+#define MONSTER_FRAME_DEAD 6
 
 #define MONSTERH 64
 #define MONSTERW 64
+
 
 Monster::Monster()
 {
@@ -45,55 +48,102 @@ int Monster::getMonsterY(void) const { return monsterY; }
 int Monster::getGhostMonsterX(void) const { return ghostMonsterX; }
 int Monster::getGhostMonsterY(void) const { return ghostMonsterY; }
 Sprite Monster::getMonsterSprite(void) const { return monsterSprite; }
+int Monster::getMonsterLife(void) const { return monsterLife; }
+int Monster::getIsGettingDamage(void) const { return isGettingDamage; }
+int Monster::getMonsterIsAlive(void) const { return monsterIsAlive; }
 
+void Monster::setIsGettingDamage(int valeur) { isGettingDamage = valeur; }
+void Monster::setMonsterLife(int valeur)
+{ 
+    monsterLife = valeur; 
+    if(valeur <= 0)
+    {
+        monsterIsAlive = 0;
+        monsterDeadAnimation = 1;
+        monsterFrameNumber = 0;
+        monsterFrameTimer = TimeBetween2FrameMonster*2;
+        monsterFrameMax = MONSTER_FRAME_DEAD;
+    }
+}
 void Monster::setMonsterStand(int valeur){ monsterStand = valeur; }
+void Monster::setMonsterIsAlive(int valeur) { monsterIsAlive = valeur;}
 
 void Monster::drawMonster(RenderWindow &window)
 {
-    prevMonsterFrameNumber = monsterFrameNumber;
-    if (monsterFrameTimer <= 0)
+    if (monsterIsAlive)
     {
-        monsterFrameTimer = TimeBetween2FrameMonster;
-        monsterFrameNumber ++;
-        if (monsterFrameNumber >= monsterFrameMax)
+        prevMonsterFrameNumber = monsterFrameNumber;
+        if (monsterFrameTimer <= 0)
         {
-            monsterFrameNumber = 0;
-        }
-    }
-    else
-    {
-        if(monsterEtat != IDLE)
-        {
-            monsterFrameTimer -= 1 + (monsterIsRunning*2);
+            monsterFrameTimer = TimeBetween2FrameMonster;
+            monsterFrameNumber ++;
+            if (monsterFrameNumber >= monsterFrameMax)
+            {
+                monsterFrameNumber = 0;
+            }
         }
         else
         {
-            //playerFrameTimer --;
+            if(monsterEtat != IDLE)
+            {
+                monsterFrameTimer -= 1 + (monsterIsRunning*2);
+            }
+            else
+            {
+                //playerFrameTimer --;
+            }
         }
+
+        monsterSprite.setPosition(Vector2f(monsterX,monsterY));
+        monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
+        (monsterDirection+START_MONSTER_WALK)*monsterH,
+        monsterW,monsterH));
+        window.draw(monsterSprite);    
+
+        RectangleShape monsterLifeBar(Vector2f(MONSTERW,8));//playerLifeBar
+        RectangleShape monsterLifeBarInside(Vector2f(MONSTERW*(float(monsterLife)/monsterLifeMax),8));
+        monsterLifeBarInside.setFillColor(Color::Red);
+        monsterLifeBarInside.setPosition(monsterX,monsterY);
+        monsterLifeBar.setFillColor(Color::Transparent);
+        monsterLifeBar.setPosition(monsterX,monsterY);
+        monsterLifeBar.setOutlineThickness(2);
+        monsterLifeBar.setOutlineColor(Color(0,0,0));
+        window.draw(monsterLifeBar);
+        window.draw(monsterLifeBarInside);
     }
+    else if (monsterDeadAnimation)
+    {
+        prevMonsterFrameNumber = monsterFrameNumber;
+        if (monsterFrameTimer <= 0)
+        {
+            monsterFrameTimer = TimeBetween2FrameMonster;
+            monsterFrameNumber ++;
+            if (monsterFrameNumber >= monsterFrameMax)
+            {
+                monsterDeadAnimation = 0;
+            }
+        }
+        else
+        {
+            monsterFrameTimer -= 1 ;
+        }
 
-    monsterSprite.setPosition(Vector2f(monsterX,monsterY));
-    monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
-    (monsterDirection+START_MONSTER_WALK)*monsterH,
-    monsterW,monsterH));
-    window.draw(monsterSprite);    
-
-    RectangleShape monsterLifeBar(Vector2f(MONSTERW,8));//playerLifeBar
-    RectangleShape monsterLifeBarInside(Vector2f(MONSTERW*(monsterLife/monsterLifeMax),8));
-    monsterLifeBarInside.setFillColor(Color::Red);
-    monsterLifeBarInside.setPosition(monsterX,monsterY);
-    monsterLifeBar.setFillColor(Color::Transparent);
-    monsterLifeBar.setPosition(monsterX,monsterY);
-    monsterLifeBar.setOutlineThickness(2);
-    monsterLifeBar.setOutlineColor(Color(0,0,0));
-    window.draw(monsterLifeBar);
-    window.draw(monsterLifeBarInside);
+        monsterSprite.setPosition(Vector2f(monsterX,monsterY));
+        monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
+        (START_MONSTER_DEAD)*monsterH,
+        monsterW,monsterH));
+        window.draw(monsterSprite);         
+    }
+    
 }
 
 void Monster::initMonster(int x, int y)
 {
     monsterLife = 100;
     monsterLifeMax = 100;
+    isGettingDamage = 0;
+    monsterIsAlive = 1;
+    monsterDeadAnimation = 0;
 
     monsterDirection = monsterDOWN;
     prevMonsterDirection = monsterDOWN;
@@ -116,229 +166,235 @@ void Monster::initMonster(int x, int y)
 
 void Monster::monsterMapCollision(Map & map)
 {
-    int i,x1,x2,y1,y2;
-
-    if(monsterH > Tile_Size)
+    if(monsterIsAlive)
     {
-        i = Tile_Size;
-    }
-    else
-    {
-        i = monsterH;
-    }
-    
-    for(;;)
-    {
-        x1 = (monsterX + ghostMonsterX)/Tile_Size ;
-        x2 = (monsterX + ghostMonsterX + monsterW - 1)/Tile_Size ;
+        int i,x1,x2,y1,y2;
 
-        y1 = (monsterY)/Tile_Size ;
-        y2 = (monsterY + i - 1)/Tile_Size ;   
-
-        if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
+        if(monsterH > Tile_Size)
         {
-            if(ghostMonsterX > 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x2) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
-                {
-                    monsterX = x2*Tile_Size;
-                    monsterX -= (monsterW+1);
-                    ghostMonsterX = 0;
-                }
-            }
-            else if(ghostMonsterX < 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y2,x1) == MUR1)
-                {
-                    monsterX = (x1+1)*Tile_Size;
-                    ghostMonsterX = 0;
-                }
-            }            
+            i = Tile_Size;
         }
-        
-        if(i==monsterH)
-        {
-            break;
-        }
-        i += Tile_Size;
-
-        if(i>monsterH)
+        else
         {
             i = monsterH;
-        }    
-    }
-
-    if(monsterW > Tile_Size)
-    {
-        i = Tile_Size;
-    }
-    else
-    {
-        i = monsterW;
-    }  
-    for(;;)
-    {
-        x1 = monsterX/Tile_Size ;
-        x2 = (monsterX + i)/Tile_Size ;
-
-        y1 = (monsterY + ghostMonsterY)/Tile_Size ;
-        y2 = (monsterY + ghostMonsterY + monsterH)/Tile_Size ;   
-
-        if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
+        }
+        
+        for(;;)
         {
-            if(ghostMonsterY > 0)
+            x1 = (monsterX + ghostMonsterX)/Tile_Size ;
+            x2 = (monsterX + ghostMonsterX + monsterW - 1)/Tile_Size ;
+
+            y1 = (monsterY)/Tile_Size ;
+            y2 = (monsterY + i - 1)/Tile_Size ;   
+
+            if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
             {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y2,x1) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
+                if(ghostMonsterX > 0)
                 {
-                    monsterY = y2*Tile_Size;
-                    monsterY -= (monsterH+1);
-                    ghostMonsterY = 0;
+                    //verifier ici si on collision map
+                    //si ok alors
+                    if(map.getTileCollision(y1,x2) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
+                    {
+                        monsterX = x2*Tile_Size;
+                        monsterX -= (monsterW+1);
+                        ghostMonsterX = 0;
+                    }
                 }
+                else if(ghostMonsterX < 0)
+                {
+                    //verifier ici si on collision map
+                    //si ok alors
+                    if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y2,x1) == MUR1)
+                    {
+                        monsterX = (x1+1)*Tile_Size;
+                        ghostMonsterX = 0;
+                    }
+                }            
             }
-            else if(ghostMonsterY < 0)
+            
+            if(i==monsterH)
             {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y1,x2) == MUR1)
-                {
-                    monsterY = (y1+1)*Tile_Size;
-                    ghostMonsterY = 0;
-                }
-            }            
-        }
-        if(i==monsterW)
-        {
-            break;
-        }
-        i += Tile_Size;
+                break;
+            }
+            i += Tile_Size;
 
-        if(i>monsterW)
+            if(i>monsterH)
+            {
+                i = monsterH;
+            }    
+        }
+
+        if(monsterW > Tile_Size)
+        {
+            i = Tile_Size;
+        }
+        else
         {
             i = monsterW;
+        }  
+        for(;;)
+        {
+            x1 = monsterX/Tile_Size ;
+            x2 = (monsterX + i)/Tile_Size ;
+
+            y1 = (monsterY + ghostMonsterY)/Tile_Size ;
+            y2 = (monsterY + ghostMonsterY + monsterH)/Tile_Size ;   
+
+            if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
+            {
+                if(ghostMonsterY > 0)
+                {
+                    //verifier ici si on collision map
+                    //si ok alors
+                    if(map.getTileCollision(y2,x1) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
+                    {
+                        monsterY = y2*Tile_Size;
+                        monsterY -= (monsterH+1);
+                        ghostMonsterY = 0;
+                    }
+                }
+                else if(ghostMonsterY < 0)
+                {
+                    //verifier ici si on collision map
+                    //si ok alors
+                    if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y1,x2) == MUR1)
+                    {
+                        monsterY = (y1+1)*Tile_Size;
+                        ghostMonsterY = 0;
+                    }
+                }            
+            }
+            if(i==monsterW)
+            {
+                break;
+            }
+            i += Tile_Size;
+
+            if(i>monsterW)
+            {
+                i = monsterW;
+            }    
+        }
+
+        prevMonsterX = monsterX;
+        prevMonsterY = monsterY;
+        monsterX += ghostMonsterX;
+        monsterY += ghostMonsterY;
+
+        if(monsterX < 0)
+        {
+            monsterX = 0;
+        }
+        else if (monsterX + monsterW > screen_W)
+        {
+            monsterX = screen_W - monsterW;
+        }
+        else if(monsterY < 0)
+        {
+            monsterY = 0;
+        }
+        else if (monsterY + monsterH > screen_H)
+        {
+            monsterY = screen_H - monsterH;
         }    
     }
-
-    prevMonsterX = monsterX;
-    prevMonsterY = monsterY;
-    monsterX += ghostMonsterX;
-    monsterY += ghostMonsterY;
-
-    if(monsterX < 0)
-    {
-        monsterX = 0;
-    }
-    else if (monsterX + monsterW > screen_W)
-    {
-        monsterX = screen_W - monsterW;
-    }
-    else if(monsterY < 0)
-    {
-        monsterY = 0;
-    }
-    else if (monsterY + monsterH > screen_H)
-    {
-        monsterY = screen_H - monsterH;
-    }    
 }
 
 
 void Monster::updateMonster(std::string action, Map &map)
 {
-    if (monsterStand)
+    if (monsterIsAlive)
     {
-        ghostMonsterX = 0;
-        ghostMonsterY = 0;
+        if (monsterStand)
+        {
+            ghostMonsterX = 0;
+            ghostMonsterY = 0;
 
-        if(action == "run")
-            monsterIsRunning = 5;
+            if(action == "run")
+                monsterIsRunning = 5;
+            else
+                monsterIsRunning = 0;
+
+            if(action == "left")
+            {
+                ghostMonsterX -= monsterSpeed + monsterIsRunning;
+                prevMonsterDirection = monsterDirection;
+                monsterDirection = monsterLEFT;
+
+                if(monsterEtat != monsterWALK)
+                {
+                    monsterEtat = monsterWALK;
+                    monsterFrameNumber = 0;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_MAX;
+                }
+            }
+            else if(action == "right")
+            {
+                ghostMonsterX += monsterSpeed + monsterIsRunning;
+                prevMonsterDirection = monsterDirection;
+                monsterDirection = monsterRIGHT;
+
+                if(monsterEtat != monsterWALK)
+                {
+                    monsterEtat = monsterWALK;
+                    monsterFrameNumber = 0;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_MAX;
+                }
+            }
+            else if(action == "up")
+            {
+                ghostMonsterY -= monsterSpeed + monsterIsRunning;
+                prevMonsterDirection = monsterDirection;
+                monsterDirection = monsterUP;
+
+                if(monsterEtat != monsterWALK)
+                {
+                    monsterEtat = monsterWALK;
+                    monsterFrameNumber = 0;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_MAX;
+                }
+            }
+            else if(action == "down")
+            {
+                ghostMonsterY += monsterSpeed + monsterIsRunning;
+                prevMonsterDirection = monsterDirection;
+                monsterDirection = monsterDOWN;
+
+                if(monsterEtat != monsterWALK)
+                {
+                    monsterEtat = monsterWALK;
+                    monsterFrameNumber = 0;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_MAX;
+                }
+            }         
+            else if(action != "down" && action != "up" &&
+                    action != "left" == false && action != "right")
+            {
+                if (monsterEtat != IDLE)
+                {
+                    monsterEtat = IDLE;
+                    monsterFrameNumber = 0;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = 3;
+                }
+            }
+            monsterMapCollision(map);
+        }
         else
-            monsterIsRunning = 0;
-
-        if(action == "left")
         {
-            ghostMonsterX -= monsterSpeed + monsterIsRunning;
-            prevMonsterDirection = monsterDirection;
-            monsterDirection = monsterLEFT;
-
-            if(monsterEtat != monsterWALK)
-            {
-                monsterEtat = monsterWALK;
-                monsterFrameNumber = 0;
-                monsterFrameTimer = TimeBetween2FrameMonster;
-                monsterFrameMax = MONSTER_FRAME_MAX;
-            }
-        }
-        else if(action == "right")
-        {
-            ghostMonsterX += monsterSpeed + monsterIsRunning;
-            prevMonsterDirection = monsterDirection;
-            monsterDirection = monsterRIGHT;
-
-            if(monsterEtat != monsterWALK)
-            {
-                monsterEtat = monsterWALK;
-                monsterFrameNumber = 0;
-                monsterFrameTimer = TimeBetween2FrameMonster;
-                monsterFrameMax = MONSTER_FRAME_MAX;
-            }
-        }
-        else if(action == "up")
-        {
-            ghostMonsterY -= monsterSpeed + monsterIsRunning;
-            prevMonsterDirection = monsterDirection;
-            monsterDirection = monsterUP;
-
-            if(monsterEtat != monsterWALK)
-            {
-                monsterEtat = monsterWALK;
-                monsterFrameNumber = 0;
-                monsterFrameTimer = TimeBetween2FrameMonster;
-                monsterFrameMax = MONSTER_FRAME_MAX;
-            }
-        }
-        else if(action == "down")
-        {
-            ghostMonsterY += monsterSpeed + monsterIsRunning;
-            prevMonsterDirection = monsterDirection;
-            monsterDirection = monsterDOWN;
-
-            if(monsterEtat != monsterWALK)
-            {
-                monsterEtat = monsterWALK;
-                monsterFrameNumber = 0;
-                monsterFrameTimer = TimeBetween2FrameMonster;
-                monsterFrameMax = MONSTER_FRAME_MAX;
-            }
-        }         
-        else if(action != "down" && action != "up" &&
-                action != "left" == false && action != "right")
-        {
+            ghostMonsterX = 0;
+            ghostMonsterY = 0;
             if (monsterEtat != IDLE)
             {
                 monsterEtat = IDLE;
                 monsterFrameNumber = 0;
                 monsterFrameTimer = TimeBetween2FrameMonster;
                 monsterFrameMax = 3;
-            }
+            }    
         }
-        monsterMapCollision(map);
-    }
-    else
-    {
-        ghostMonsterX = 0;
-        ghostMonsterY = 0;
-        if (monsterEtat != IDLE)
-        {
-            monsterEtat = IDLE;
-            monsterFrameNumber = 0;
-            monsterFrameTimer = TimeBetween2FrameMonster;
-            monsterFrameMax = 3;
-        }    
     }
 }

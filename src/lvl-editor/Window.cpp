@@ -19,7 +19,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
 	{
-		std::cerr << "raler" << std::endl ;
+		std::cerr << "Fail to load texture" << std::endl ;
 		exit( 1 );
 	}
 	tileSprite_.setTexture( tileTexture_ );
@@ -55,9 +55,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 }
 
 
-LEWindow::~LEWindow(){
-	// std::cout << "Destruction" << std::endl ;
-}
+LEWindow::~LEWindow(){}
 
 std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
 std::string LEWindow::til_filename() const { return til_filename_ ; }

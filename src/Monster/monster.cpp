@@ -27,7 +27,8 @@ Monster::Monster()
 
     ghostMonsterX = 0;
     ghostMonsterY = 0;
-    life = 100;
+    monsterLife = 100; 
+    monsterLifeMax = 100;
     monsterX = 0;
     monsterY = 0;
     monsterFrameNumber = 0;
@@ -76,11 +77,23 @@ void Monster::drawMonster(RenderWindow &window)
     (monsterDirection+START_MONSTER_WALK)*monsterH,
     monsterW,monsterH));
     window.draw(monsterSprite);    
+
+    RectangleShape monsterLifeBar(Vector2f(MONSTERW,8));//playerLifeBar
+    RectangleShape monsterLifeBarInside(Vector2f(MONSTERW*(monsterLife/monsterLifeMax),8));
+    monsterLifeBarInside.setFillColor(Color::Red);
+    monsterLifeBarInside.setPosition(monsterX,monsterY);
+    monsterLifeBar.setFillColor(Color::Transparent);
+    monsterLifeBar.setPosition(monsterX,monsterY);
+    monsterLifeBar.setOutlineThickness(2);
+    monsterLifeBar.setOutlineColor(Color(0,0,0));
+    window.draw(monsterLifeBar);
+    window.draw(monsterLifeBarInside);
 }
 
 void Monster::initMonster(int x, int y)
 {
-    life = 100;
+    monsterLife = 100;
+    monsterLifeMax = 100;
 
     monsterDirection = monsterDOWN;
     prevMonsterDirection = monsterDOWN;

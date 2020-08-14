@@ -29,12 +29,15 @@ class Map
 
         int getTileCollision(int x,int y) const;
         Sprite getSprite(int x, int y) const;
+        Sprite getSpriteBreak(int x, int y) const;
 
         int getTileBreak(int x,int y) const;
         int getLifeTileBreak(int x,int y) const;
+        int getTileIsGettingDamage(void) const;
 
         void setTileBreak(int x,int y, int valeur);
         void setLifeTileBreak(int x,int y, int valeur);
+        void setTileIsGettingDamage(int valeur);
 
     protected:
         int tile1[nbTile_H][nbTile_W];
@@ -42,6 +45,8 @@ class Map
         int tile3[nbTile_H][nbTile_W];
         int tile4[nbTile_H][nbTile_W];
         int lifeTile4[nbTile_H][nbTile_W];
+
+        int tileIsGettingDamage;
 
         Texture tileSetTexture1;
         Sprite tileSet1;

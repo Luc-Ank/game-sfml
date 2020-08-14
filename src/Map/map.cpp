@@ -39,12 +39,16 @@ Map::Map()
 
     currentTileNumber = 0;
     mapTimerChangeTile = TimeBetween2Tile * 3;
+    tileIsGettingDamage = 0;
 }
 
 
 int Map::getTileCollision(int x,int y) const { return tile3[x][y]; }
 int Map::getTileBreak(int x,int y) const { return tile4[x][y]; }
 int Map::getLifeTileBreak(int x,int y) const { return lifeTile4[x][y]; }
+int Map::getTileIsGettingDamage(void) const { return tileIsGettingDamage; }
+
+void Map::setTileIsGettingDamage(int valeur) { tileIsGettingDamage = valeur; }
 
 Sprite Map::getSprite(int x, int y) const
 {
@@ -58,15 +62,27 @@ Sprite Map::getSprite(int x, int y) const
     return retsprite;
 }
 
+Sprite Map::getSpriteBreak(int x, int y) const
+{
+    Sprite retsprite;
+    int a = tile4[x][y];
+    int posx = a % 10 * Tile_Size;
+    int posy = a / 10 * Tile_Size;
+    retsprite.setTexture(tileSetTexture1);
+    retsprite.setPosition(Vector2f(y*Tile_Size,x*Tile_Size));
+    retsprite.setTextureRect(IntRect(posx,posy,Tile_Size,Tile_Size));
+    return retsprite;
+}
+
 void Map::setTileBreak(int x,int y, int valeur) { tile4[x][y] = valeur; }
 void Map::setLifeTileBreak(int x,int y, int valeur)
 { 
     lifeTile4[x][y] = valeur; 
-    if (lifeTile4[x][y] == 50)
+    if (lifeTile4[x][y] <= 50)
     {
         tile4[x][y] = 288;
     }
-    if (lifeTile4[x][y] == 0)
+    if (lifeTile4[x][y] <= 0)
     {
         tile4[x][y] = 0;
     }

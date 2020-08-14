@@ -333,16 +333,16 @@ void Map::changeTile( int layer, std::pair<int,int> coord, int tile )
 {
     switch (layer)
     {
-        case 0:
+        case 1:
             tile1[coord.second][coord.first] = tile ;
             break ;
-        case 1:
+        case 2:
             tile2[coord.second][coord.first] = tile ;
             break ;
-        case 2:
+        case 3:
             tile3[coord.second][coord.first] = tile ;
             break ;
-        case 3:
+        case 4:
             tile4[coord.second][coord.first] = tile ;
             break ;
         default:

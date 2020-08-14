@@ -66,7 +66,7 @@ void LEWindow::setCurrentLayer (int i)
 	if (i==1 || i==2 || i==3 || i==4 )
 	{
 		std::cout << "Current layer is now " << i << std::endl ;
-		currentLayer_ = i - 1 ;
+		currentLayer_ = i ;
 	} else
 	{
 		std::cout << "Bad value for layer (" << i << ")" << std::endl ;

@@ -43,15 +43,15 @@ public:
 	// 	window or not
 	void Run();
 	void seekKeyEvent(sf::Event) ;
-	void seekMouseLevelEvent(sf::Event) ;
-	void seekMouseTileEvent(sf::Event) ;
+	void seekLevelEvent(sf::Event) ;
+	void seekTileEvent(sf::Event) ;
 	std::pair<int,int> PairFromPosition(int, int) const ;
 	int indiceFromPair(std::pair<int,int>, bool) const ;
 	std::pair<int,int> posCurrentTile(bool) const ;
 
 private:
 	int currentLayer_, currentTile_ ;
-	// bool multiple_ ;
+	bool multiple_ ;
 	sf::RenderWindow *LvlWindow_, *TilWindow_ ;
 	std::string lvl_filename_, til_filename_ ;
 	sf::Texture tileTexture_ ;

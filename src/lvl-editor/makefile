@@ -12,7 +12,7 @@ Window.o: Window.cpp Window.h
 	$(CC) -shared $(SFML) $(DEBUG) $(CFLAGS) Window.cpp
 
 levelWindow.o: Window.cpp Window.h
-	$(CC) -shared $(SFML) $(CFLAGS) $(THREAD) Window.cpp
+	$(CC) -shared $(SFML) $(CFLAGS) Window.cpp
 
 
 clean:

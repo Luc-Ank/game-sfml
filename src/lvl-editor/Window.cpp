@@ -10,12 +10,14 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin,
 	// multiple_(false),
 	LvlWindow_(lvlWin), TilWindow_(tilWin),
 	lvl_filename_(file), til_filename_(til),
-	currentLayer_(0)
+	currentLayer_(1), multiple_(false)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
+
+	multiple_ = false ;
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
 	{
@@ -110,12 +112,12 @@ void LEWindow::Run()
 		while (LvlWindow_->pollEvent( event ))
 		{
 			seekKeyEvent( event );
-			seekMouseLevelEvent( event );
+			seekLevelEvent( event );
 		}
 		while (TilWindow_->pollEvent( event ))
 		{
 			seekKeyEvent( event );
-			seekMouseTileEvent( event );
+			seekTileEvent( event );
 		}
 
 		LvlWindow_->clear( sf::Color::Black );
@@ -187,11 +189,11 @@ void LEWindow::seekKeyEvent(sf::Event event)
 
 
 
-void LEWindow::seekMouseLevelEvent( sf::Event event )
+void LEWindow::seekLevelEvent( sf::Event event )
 {
+	std::pair<int,int> pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
-		std::pair<int,int> pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
 		if (event.mouseButton.button == sf::Mouse::Left)
 		{
 			map_.changeTile( currentLayer(), pair, currentTile() );
@@ -200,10 +202,14 @@ void LEWindow::seekMouseLevelEvent( sf::Event event )
 			map_.changeTile( currentLayer(), pair, 0 );
 		}
 	}
+	// if (multiple_)
+	// {
+	// 	map_.changeTile( currentLayer(), pair, currentTile() );
+	// }
 }
 
 
-void LEWindow::seekMouseTileEvent( sf::Event event )
+void LEWindow::seekTileEvent( sf::Event event )
 {
 	if (event.type == sf::Event::MouseButtonPressed)
 	{

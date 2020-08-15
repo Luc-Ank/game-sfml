@@ -1,4 +1,4 @@
-CC = clang++
+CC = g++
 CFLAGS = -c
 DEBUG = -Wall -Werror -Wextra
 SFML = -lsfml-graphics -lsfml-window -lsfml-system

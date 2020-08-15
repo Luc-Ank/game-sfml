@@ -15,7 +15,7 @@
 #define nbTileT_W	10
 #define TILE_SIZE	32
 #define TILE_SIZE_f	32.f
-#define OFFSET_X	0
+#define OFFSET_X	32
 #define OFFSET_Y	0
 
 
@@ -66,7 +66,7 @@ private:
 	std::string lvl_filename_, til_filename_ ;
 	sf::Texture tileTexture_ , toolTexture_ ;
 	sf::Sprite  tileSprite_  , toolSprite_ ;
-	sf::Font font_;
+	sf::Font font_ ;
 	Map map_ ;
 };
 

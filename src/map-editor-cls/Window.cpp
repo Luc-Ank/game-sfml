@@ -14,7 +14,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
-	ToolWindow_->create( sf::VideoMode(5*TILE_SIZE, TILE_SIZE), "Tool", SF_STYLE );
+	ToolWindow_->create( sf::VideoMode( 6*TILE_SIZE, TILE_SIZE ), "Tool", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 	ToolWindow_->setFramerateLimit( 60 );
@@ -149,7 +149,7 @@ void LEWindow::tool_draw() const
 	rect.setOutlineThickness( 2.f );
 	rect.setOutlineColor( sf::Color::White );
 	pair_t pair = posCurrentTile( true ) ;
-	rect.setPosition( ((float) currentLayer() - 1.f) * TILE_SIZE_f +1.f, 1.f );
+	rect.setPosition( OFFSET_X + ((float) currentLayer() - 1.f) * TILE_SIZE_f +1.f, OFFSET_Y + 1.f );
 	ToolWindow_->draw( rect );
 
 
@@ -160,7 +160,7 @@ void LEWindow::tool_draw() const
 	text.setString( ss.str() );
 	text.setCharacterSize( 10 );
 	text.setFillColor( sf::Color::Red );
-	text.setPosition( 3.f * TILE_SIZE_f + 2.f, 0.f );
+	text.setPosition( OFFSET_X + 3.f * TILE_SIZE_f + 2.f, OFFSET_Y );
 
 	ToolWindow_->draw( text );
 }
@@ -360,16 +360,23 @@ void LEWindow::seekToolEvent( sf::Event event )
 	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
 		int x = event.mouseButton.x, y = event.mouseButton.y ;
-		if ( x >= OFFSET_X && x <= OFFSET_X + 4*TILE_SIZE)	// if we click on one of the four layer
+		if (y >= OFFSET_Y && y <= OFFSET_Y + TILE_SIZE )
 		{
-			int l_tmp = PairFromPosition( x - OFFSET_X, y - OFFSET_Y ).first;
-			setCurrentLayer( l_tmp + 1 );
-		} else if ( x >= OFFSET_X + 4*TILE_SIZE && x <= OFFSET_X + 5*TILE_SIZE)
-		{
-			if ( y >= OFFSET_Y && y <= OFFSET_Y + TILE_SIZE / 2 )
-				currentLive_ ++ ;
-			else if (y >= OFFSET_Y + TILE_SIZE / 2 && y <= OFFSET_Y + TILE_SIZE)
-				currentLive_ -- ;
+			if ( x <= OFFSET_X)
+			{
+				map_.saveLevel( lvl_filename() );
+			} else if ( x >= OFFSET_X && x <= OFFSET_X + 4*TILE_SIZE)	// if we click on one of the four layer
+			{
+				int l_tmp = PairFromPosition( x - OFFSET_X, y - OFFSET_Y ).first;
+				setCurrentLayer( l_tmp + 1 );
+			} else if ( x >= OFFSET_X + 4*TILE_SIZE && x <= OFFSET_X + 5*TILE_SIZE)
+			{
+				if ( y >= OFFSET_Y && y <= OFFSET_Y + TILE_SIZE / 2 )
+					currentLive_ ++ ;
+				else if (y >= OFFSET_Y + TILE_SIZE / 2 && y <= OFFSET_Y + TILE_SIZE)
+					if (currentLive_ > 0)
+						currentLive_ -- ;
+			}
 		}
 	}
 }

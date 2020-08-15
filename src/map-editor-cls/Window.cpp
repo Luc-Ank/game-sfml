@@ -12,7 +12,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 	lvl_filename_(file), til_filename_(til),
 	currentLayer_(1), currentLive_(0)
 {
-	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Level editor", SF_STYLE );
+	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	ToolWindow_->create( sf::VideoMode( 6*TILE_SIZE, TILE_SIZE ), "Tool", SF_STYLE );
 	LvlWindow_->setFramerateLimit( 60 );	

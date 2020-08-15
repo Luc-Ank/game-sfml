@@ -33,14 +33,14 @@ Attack : v
 
 
 
-## Level editor
+## Map editor
 
 ### Usage
 
-```level-editor level-filename tile-file```
+```map-editor map-filename tile-file```
 
 where :
-- `level-filename` is the path the the text file containing the layers of the map (if such a file doesn't exist, it is created)
+- `map-filename` is the path the the text file containing the layers of the map (if such a file doesn't exist, it is created)
 - `tile-file` is the path to the tile set file. The tiles of this fils have to be 32x32 px, and be organised by lines of 10
 
 
@@ -58,4 +58,3 @@ On the tile seclector window, a left clic will select a tile (the selected one i
 On the map window, a left click change the tile of the selected layer. A right clic delete the tile.
 
 To add/remove many tiles at a time, keep `LShift` pressed and keep the left or right button clicked.
->>>>>>> level-editor

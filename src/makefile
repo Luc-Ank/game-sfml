@@ -3,7 +3,7 @@ CFLAGS = -c
 DEBUG = -Wall -Werror -Wextra
 SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
-all: game-sfml level-editor
+all: game-sfml map-editor
 
 debug: DEBUG += -g -fsanitize=address
 debug: all
@@ -17,11 +17,11 @@ test.o: test.cpp Level/level1.o
 clean:
 	rm *.o game-sfml
 
-level-editor: level-editor.o lvl-editor/Window.o Map/map.o
-	$(CC) $(DEBUG) level-editor.o lvl-editor/Window.o Map/map.o -o level-editor $(SFML)
+map-editor: map-editor.o map-editor-cls/Window.o Map/map.o
+	$(CC) $(DEBUG) map-editor.o map-editor-cls/Window.o Map/map.o -o map-editor $(SFML)
 
-level-editor.o: level-editor.cpp
-	$(CC) $(DEBUG) $(CFLAGS) level-editor.cpp
+map-editor.o: map-editor.cpp
+	$(CC) $(DEBUG) $(CFLAGS) map-editor.cpp
 
 
 run: all

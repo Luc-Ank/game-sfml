@@ -1,4 +1,6 @@
 game-sfml
+level-editor
+map-editor
 *.o
 *.out
 build*/

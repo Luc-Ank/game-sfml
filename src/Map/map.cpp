@@ -175,7 +175,7 @@ void Map::loadMap(std::string filename)
 
 void Map::drawMap(int layer, RenderWindow &window)
 {
-    int x,y,a,posx,posy; 
+    int x,y,a,posx,posy;
 
     if (mapTimerChangeTile <= 0)
     {
@@ -303,4 +303,82 @@ void Map::drawMap(int layer, RenderWindow &window)
 void Map::changeLevel(std::string filename)
 {
     loadMap(filename);
+}
+
+
+
+void Map::saveLevel(std::string const filename) const
+{
+    std::ofstream flux_level( filename, std::ios::out) ;
+    if (!flux_level)
+    {
+        std::cerr << "Fail to create " << filename << std::endl ;
+        exit( 1 );
+    } else
+    {
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile1[y][x] << "," ;
+            }
+            flux_level << tile1[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile2[y][x] << "," ;
+            }
+            flux_level << tile2[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile3[y][x] << "," ;
+            }
+            flux_level << tile3[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << tile4[y][x] << "," ;
+            }
+            flux_level << tile4[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        for (int y=0; y<nbTile_H; y++){
+            for (int x=0; x<nbTile_W-1; x++)
+            {
+                flux_level << lifeTile4[y][x] << "," ;
+            }
+            flux_level << lifeTile4[y][nbTile_W-1] << std::endl ;
+        }
+        flux_level << std::endl ;
+        std::cout << "Level saved in " << filename << std::endl ;
+    }
+}
+
+
+
+void Map::changeTile( int layer, std::pair<int,int> coord, int tile )
+{
+    switch (layer)
+    {
+        case 1:
+            tile1[coord.second][coord.first] = tile ;
+            break ;
+        case 2:
+            tile2[coord.second][coord.first] = tile ;
+            break ;
+        case 3:
+            tile3[coord.second][coord.first] = tile ;
+            break ;
+        case 4:
+            tile4[coord.second][coord.first] = tile ;
+            break ;
+        default:
+            std::cerr << "Wrong layer" << std::endl ;
+    }
 }

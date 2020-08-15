@@ -28,15 +28,15 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 	tileSprite_.setTexture( tileTexture_ );
 	tileSprite_.setPosition( 0.f, 0.f );
 
-	if (!toolTexture_.loadFromFile( "lvl-editor/tool_backgroung.png" ))
+	if (!toolTexture_.loadFromFile( "map-editor-cls/tool_background.png" ))
 	{
-		std::cerr << "Fail to load texture lvl-editor/tool_backgroung.png" << std::endl ;
+		std::cerr << "Fail to load texture map-editor-cls/tool_background.png" << std::endl ;
 		exit( 1 );
 	}
 	toolSprite_.setTexture( toolTexture_ );
 	toolSprite_.setPosition( 0.f, 0.f );
 
-	if (!font_.loadFromFile("lvl-editor/font.ttf"))
+	if (!font_.loadFromFile("map-editor-cls/font.ttf"))
 	{
 		std::cerr << "Fail to load font" << std::endl ;
 	}

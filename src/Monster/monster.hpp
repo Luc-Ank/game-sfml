@@ -28,7 +28,7 @@ class Monster
 
         void drawMonster(RenderWindow &window);
         void initMonster(int x, int y); 
-        void updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster);
+        void updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster,Sprite playerSprite);
         //void playerCenterScrolling(Map &map);
         void monsterMapCollision(Map &map);
         void monsterMonsterCollision(Monster monster[], int monsterNumber, int actualmonster);
@@ -46,6 +46,9 @@ class Monster
         int getMonsterLife(void) const;
         int getIsGettingDamage(void) const;
         int getMonsterIsAlive(void) const;
+        int getPlayerIsGettingDmg(void) const;
+        int getDmgToPlayer(void) const;
+        int getMonsterIsAttacking(void) const;
 
         void setMonsterStand(int valeur);
         void setMonsterLife(int valeur);
@@ -60,12 +63,14 @@ class Monster
         int monsterIsAlive;
         int monsterDeadAnimation;
 
+        int monsterIsAttacking;
+
         int monsterX,monsterY;
         int monsterW,monsterH;
         int monsterFrameNumber, monsterFrameTimer, monsterFrameMax;
         int prevMonsterFrameNumber;
 
-        int monsterIsRunning,monsterIsAttacking;
+        int monsterIsRunning;
         int monsterEtat,monsterDirection;
 
         int ghostMonsterX,ghostMonsterY;
@@ -73,6 +78,9 @@ class Monster
         int prevMonsterDirection;
 
         int monsterStand;
+        int dmgToPlayer;
+        int startMonsterState;
+        int playerIsGettingDmg;
 
         Texture monsterTexture;
         Sprite monsterSprite;
@@ -96,5 +104,8 @@ class Monster
         const int MUR1 = 42;
         const int breakMUR1 = 282;
         const int breakMUR2 = 288;
+
+        const int spearOn = 1;
+        const int daggerOn = 0;
 };
 #endif

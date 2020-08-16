@@ -12,6 +12,10 @@ using namespace sf;
 #define MONSTER_FRAME_MAX 7
 #define START_MONSTER_DEAD 20
 #define MONSTER_FRAME_DEAD 6
+#define START_MONSTER_ATTACK_SPEAR 3
+#define MONSTER_FRAME_ATTACK_SPEAR 8
+#define START_MONSTER_ATTACK_DAGGER 11
+#define MONSTER_FRAME_ATTACK_DAGGER 6
 
 #define MONSTERH 64
 #define MONSTERW 64
@@ -54,6 +58,9 @@ int Monster::getMonsterLife(void) const { return monsterLife; }
 int Monster::getIsGettingDamage(void) const { return isGettingDamage; }
 int Monster::getMonsterIsAlive(void) const { return monsterIsAlive; }
 bool Monster::getMonsterStand(void) const { return monsterStand; }
+int Monster::getPlayerIsGettingDmg(void) const { return playerIsGettingDmg; }
+int Monster::getDmgToPlayer(void) const { return dmgToPlayer; }
+int Monster::getMonsterIsAttacking(void) const { return monsterIsAttacking; }
 
 void Monster::setIsGettingDamage(int valeur) { isGettingDamage = valeur; }
 void Monster::setMonsterLife(int valeur)
@@ -89,9 +96,9 @@ void Monster::drawMonster(RenderWindow &window)
         }
         else
         {
-            if(monsterEtat != IDLE)
+            if(monsterEtat != IDLE || monsterIsAttacking == 1)
             {
-                monsterFrameTimer -= 1 + (monsterIsRunning*2);
+                monsterFrameTimer -= 1 + (monsterIsRunning*2) + (monsterIsAttacking*3);
             }
             else
             {
@@ -101,7 +108,7 @@ void Monster::drawMonster(RenderWindow &window)
 
         monsterSprite.setPosition(Vector2f(monsterX,monsterY));
         monsterSprite.setTextureRect(IntRect(monsterFrameNumber*monsterW, 
-        (monsterDirection+START_MONSTER_WALK)*monsterH,
+        (monsterDirection+startMonsterState)*monsterH,
         monsterW,monsterH));
         window.draw(monsterSprite);    
 
@@ -149,6 +156,8 @@ void Monster::initMonster(int x, int y)
     isGettingDamage = 0;
     monsterIsAlive = 1;
     monsterDeadAnimation = 0;
+
+    dmgToPlayer = 0;
 
     monsterDirection = monsterDOWN;
     prevMonsterDirection = monsterDOWN;
@@ -306,101 +315,149 @@ void Monster::monsterMapCollision(Map & map)
 }
 
 
-void Monster::updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster)
+void Monster::updateMonster(std::string action, Map &map, Monster monster[], int monsterNumber, int actualmonster, Sprite playerSprite)
 {
     if (monsterIsAlive)
     {
-        if (monsterStand)
+        if (monsterIsAttacking)
         {
-            ghostMonsterX = 0;
-            ghostMonsterY = 0;
-
-            if(action == "run")
-                monsterIsRunning = 5;
+            if (monsterFrameNumber == monsterFrameMax-1)
+            {
+                monsterIsAttacking = 0;
+                playerIsGettingDmg = 0;
+                dmgToPlayer = 0;
+                //map.setTileIsGettingDamage(0);
+            }
+            //int dmg = 10;//spear test
+            if (Collision::PixelPerfectTest(playerSprite, monsterSprite) && playerIsGettingDmg == 0)
+            {
+                dmgToPlayer = 40;
+                playerIsGettingDmg = 1;
+            }
             else
-                monsterIsRunning = 0;
-
-            if(action == "left")
             {
-                ghostMonsterX -= monsterSpeed + monsterIsRunning;
-                prevMonsterDirection = monsterDirection;
-                monsterDirection = monsterLEFT;
-
-                if(monsterEtat != monsterWALK)
-                {
-                    monsterEtat = monsterWALK;
-                    monsterFrameNumber = 0;
-                    monsterFrameTimer = TimeBetween2FrameMonster;
-                    monsterFrameMax = MONSTER_FRAME_MAX;
-                }
+                dmgToPlayer = 0;
             }
-            else if(action == "right")
+            //playerAttackTile(map,dmg);
+        }
+        else
+        {
+            if (monsterStand)
             {
-                ghostMonsterX += monsterSpeed + monsterIsRunning;
-                prevMonsterDirection = monsterDirection;
-                monsterDirection = monsterRIGHT;
+                ghostMonsterX = 0;
+                ghostMonsterY = 0;
 
-                if(monsterEtat != monsterWALK)
+                if(action == "run")
+                    monsterIsRunning = 5;
+                else
+                    monsterIsRunning = 0;
+
+                if(action == "left")
                 {
-                    monsterEtat = monsterWALK;
-                    monsterFrameNumber = 0;
-                    monsterFrameTimer = TimeBetween2FrameMonster;
-                    monsterFrameMax = MONSTER_FRAME_MAX;
+                    ghostMonsterX -= monsterSpeed + monsterIsRunning;
+                    prevMonsterDirection = monsterDirection;
+                    monsterDirection = monsterLEFT;
+
+                    if(monsterEtat != monsterWALK)
+                    {
+                        monsterEtat = monsterWALK;
+                        monsterFrameNumber = 0;
+                        monsterFrameTimer = TimeBetween2FrameMonster;
+                        monsterFrameMax = MONSTER_FRAME_MAX;
+                    }
                 }
+                else if(action == "right")
+                {
+                    ghostMonsterX += monsterSpeed + monsterIsRunning;
+                    prevMonsterDirection = monsterDirection;
+                    monsterDirection = monsterRIGHT;
+
+                    if(monsterEtat != monsterWALK)
+                    {
+                        monsterEtat = monsterWALK;
+                        monsterFrameNumber = 0;
+                        monsterFrameTimer = TimeBetween2FrameMonster;
+                        monsterFrameMax = MONSTER_FRAME_MAX;
+                    }
+                }
+                else if(action == "up")
+                {
+                    ghostMonsterY -= monsterSpeed + monsterIsRunning;
+                    prevMonsterDirection = monsterDirection;
+                    monsterDirection = monsterUP;
+
+                    if(monsterEtat != monsterWALK)
+                    {
+                        monsterEtat = monsterWALK;
+                        monsterFrameNumber = 0;
+                        monsterFrameTimer = TimeBetween2FrameMonster;
+                        monsterFrameMax = MONSTER_FRAME_MAX;
+                    }
+                }
+                else if(action == "down")
+                {
+                    ghostMonsterY += monsterSpeed + monsterIsRunning;
+                    prevMonsterDirection = monsterDirection;
+                    monsterDirection = monsterDOWN;
+
+                    if(monsterEtat != monsterWALK)
+                    {
+                        monsterEtat = monsterWALK;
+                        monsterFrameNumber = 0;
+                        monsterFrameTimer = TimeBetween2FrameMonster;
+                        monsterFrameMax = MONSTER_FRAME_MAX;
+                    }
+                }         
+                else if(action != "down" && action != "up" &&
+                        action != "left" == false && action != "right")
+                {
+                    if (monsterEtat != IDLE)
+                    {
+                        monsterEtat = IDLE;
+                        monsterFrameNumber = 0;
+                        monsterFrameTimer = TimeBetween2FrameMonster;
+                        monsterFrameMax = 3;
+                    }
+                }
+                monsterMapCollision(map);
+                monsterMonsterCollision(monster,monsterNumber, actualmonster);
             }
-            else if(action == "up")
+            else
             {
-                ghostMonsterY -= monsterSpeed + monsterIsRunning;
-                prevMonsterDirection = monsterDirection;
-                monsterDirection = monsterUP;
-
-                if(monsterEtat != monsterWALK)
-                {
-                    monsterEtat = monsterWALK;
-                    monsterFrameNumber = 0;
-                    monsterFrameTimer = TimeBetween2FrameMonster;
-                    monsterFrameMax = MONSTER_FRAME_MAX;
-                }
-            }
-            else if(action == "down")
-            {
-                ghostMonsterY += monsterSpeed + monsterIsRunning;
-                prevMonsterDirection = monsterDirection;
-                monsterDirection = monsterDOWN;
-
-                if(monsterEtat != monsterWALK)
-                {
-                    monsterEtat = monsterWALK;
-                    monsterFrameNumber = 0;
-                    monsterFrameTimer = TimeBetween2FrameMonster;
-                    monsterFrameMax = MONSTER_FRAME_MAX;
-                }
-            }         
-            else if(action != "down" && action != "up" &&
-                    action != "left" == false && action != "right")
-            {
+                ghostMonsterX = 0;
+                ghostMonsterY = 0;
                 if (monsterEtat != IDLE)
                 {
                     monsterEtat = IDLE;
                     monsterFrameNumber = 0;
                     monsterFrameTimer = TimeBetween2FrameMonster;
                     monsterFrameMax = 3;
-                }
+                }    
             }
-            monsterMapCollision(map);
-            monsterMonsterCollision(monster,monsterNumber, actualmonster);
-        }
-        else
-        {
-            ghostMonsterX = 0;
-            ghostMonsterY = 0;
-            if (monsterEtat != IDLE)
+            startMonsterState = START_MONSTER_WALK;
+            if (action == "attack")
             {
-                monsterEtat = IDLE;
+                monsterIsAttacking = 1;
                 monsterFrameNumber = 0;
-                monsterFrameTimer = TimeBetween2FrameMonster;
-                monsterFrameMax = 3;
-            }    
+                if(spearOn)
+                {
+                    startMonsterState = START_MONSTER_ATTACK_SPEAR;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_ATTACK_SPEAR;
+                }
+                /*else if(daggerOn)
+                {
+                    startPlayerState = START_PlAYER_ATTACK_SPEAR;
+                    playerFrameTimer = TimeBetween2FramePlayer;
+                    playerFrameMax = PlAYER_FRAME_ATTACK_SPEAR;
+                }*/
+                else
+                {
+                    startMonsterState = START_MONSTER_ATTACK_DAGGER;
+                    monsterFrameTimer = TimeBetween2FrameMonster;
+                    monsterFrameMax = MONSTER_FRAME_ATTACK_DAGGER;                    
+                }               
+            }
         }
     }
 }

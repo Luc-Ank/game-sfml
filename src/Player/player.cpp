@@ -20,6 +20,8 @@ using namespace sf;
 
 #define PLAYERH 64
 #define PLAYERW 64
+#define START_PLAYER_DEAD 20
+#define PLAYER_FRAME_DEAD 6
 #define START_PLAYER_WALK 7
 #define PLAYER_FRAME_MAX 7
 #define START_PlAYER_ATTACK_SPEAR 3
@@ -79,40 +81,30 @@ Sprite Player::getPlayerSprite(void) const { return playerSprite; }
 
 void Player::drawPlayer(RenderWindow &window)
 {
-    if (playerFrameTimer <= 0)
+    //playerSprite.setPosition(Vector2f(playerX,playerY));
+    if (playerDeathTimer == 0)
     {
-        playerFrameTimer = TimeBetween2FramePlayer;
-        playerFrameNumber ++;
-        if (playerFrameNumber >= playerFrameMax)
+        if (playerFrameTimer <= 0)
         {
-            playerFrameNumber = 0;
-        }
-    }
-    else
-    {
-        if(playerEtat != IDLE || playerIsAttacking == 1)
-        {
-            playerFrameTimer -= 1 + (playerIsRunning*2) + (playerIsAttacking*3);
+            playerFrameTimer = TimeBetween2FramePlayer;
+            playerFrameNumber ++;
+            if (playerFrameNumber >= playerFrameMax)
+            {
+                playerFrameNumber = 0;
+            }
         }
         else
         {
-            //playerFrameTimer --;
+            if(playerEtat != IDLE || playerIsAttacking == 1)
+            {
+                playerFrameTimer -= 1 + (playerIsRunning*2) + (playerIsAttacking*3);
+            }
+            else
+            {
+                //playerFrameTimer --;
+            }
         }
-    }
 
-    //playerSprite.setPosition(Vector2f(playerX,playerY));
-
-    if(invincibleTimer > 0)
-    {
-        if(playerFrameNumber % 2 == 0)
-        {
-            /*playerSprite.setTextureRect(IntRect(,
-            playerW,playerH));
-            window.draw(playerSprite);*/
-        }
-    }
-    else
-    {
         playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
         (playerDirection+startPlayerState)*playerH,
         playerW,playerH));
@@ -125,7 +117,7 @@ void Player::drawPlayer(RenderWindow &window)
         window.draw(shape);
 
         RectangleShape playerLifeBar(Vector2f(PLAYERW,8));//playerLifeBar
-        RectangleShape playerLifeBarInside(Vector2f(PLAYERW*(playerLife/playerLifeMax),8));
+        RectangleShape playerLifeBarInside(Vector2f(PLAYERW*(float(playerLife)/playerLifeMax),8));
         playerLifeBarInside.setFillColor(Color::Red);
         playerLifeBarInside.setPosition(playerX,playerY);
         playerLifeBar.setFillColor(Color::Transparent);
@@ -135,6 +127,30 @@ void Player::drawPlayer(RenderWindow &window)
         window.draw(playerLifeBar);
         window.draw(playerLifeBarInside);
     }
+    else
+    {
+        //prevMPlayerFrameNumber = playerFrameNumber;
+        if (playerFrameTimer <= 0)
+        {
+            playerFrameTimer = TimeBetween2FramePlayer;
+            playerFrameNumber ++;
+        }
+        else
+        {
+            playerFrameTimer -= 1 ;
+        }
+
+        //monsterSprite.setPosition(Vector2f(monsterX,monsterY)); //????
+        playerSprite.setTextureRect(IntRect(playerFrameNumber*playerW, 
+        (START_PLAYER_DEAD)*playerH,
+        playerW,playerH));
+        window.draw(playerSprite); 
+        if (playerFrameNumber >= playerFrameMax)
+        {
+            initPlayer();
+        }        
+    }
+    
 }
 
 void Player::initPlayer()
@@ -164,10 +180,27 @@ void Player::initPlayer()
     playerCollision = 0;
     playerDeathTimer = 0;
     playerIsAttacking = 0;
+
+    playerSprite.setTexture(playerTexture);
 }
 
 void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber)
 {
+    for (int i = 0; i < monsterNumber; i++)
+    {
+        if (monster[i].getPlayerIsGettingDmg() == 1 && monster[i].getMonsterIsAlive() && monster[i].getMonsterIsAttacking())
+        {
+            playerLife -= monster[i].getDmgToPlayer();  
+            if(playerLife <= 0 && playerDeathTimer == 0)
+            {
+                playerDeathTimer = 1;
+                playerFrameNumber = 0;
+                playerFrameTimer = TimeBetween2FramePlayer*2;
+                playerFrameMax = PLAYER_FRAME_DEAD;
+            }
+        }     
+    }
+
     if (playerDeathTimer == 0)
     {
         if (invincibleTimer > 0)
@@ -347,14 +380,18 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
         }
     }
 
-    if (playerDeathTimer > 0)
+    /*if (playerDeathTimer > 0)
     {
         playerDeathTimer --;
         if (playerDeathTimer == 0)
         {
-            //reinit position depart
+            playerX = 0;
+            playerY= 0;
+            ghostPlayerX = 0;
+            ghostPlayerY = 0;
+            playerLife = 100;
         }
-    }
+    }*/
 }
 
 

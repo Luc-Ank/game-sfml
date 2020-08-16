@@ -16,9 +16,9 @@ int main (int argc, char ** argv)
 		exit( 1 );
 	}
 
-	sf::RenderWindow levelRenderWindow, tileRenderWindow, toolRenderWindow;
+	sf::RenderWindow mapRenderWindow, tileRenderWindow, toolRenderWindow;
 
-	LEWindow win( &levelRenderWindow, &tileRenderWindow, &toolRenderWindow, argv[1], argv[2] );
+	MEWindow win( &mapRenderWindow, &tileRenderWindow, &toolRenderWindow, argv[1], argv[2] );
 
 	// handle the window
 	win.Run();

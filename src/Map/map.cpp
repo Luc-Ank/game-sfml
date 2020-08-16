@@ -310,7 +310,7 @@ void Map::changeLevel(std::string filename)
 
 
 
-void Map::saveLevel(std::string const filename) const
+void Map::saveMap(std::string const filename) const
 {
     std::ofstream flux_level( filename, std::ios::out) ;
     if (!flux_level)

@@ -6,16 +6,16 @@
 #define SF_STYLE sf::Style::Titlebar | sf::Style::Close
 
 
-LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::RenderWindow *toolWin,
+MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::RenderWindow *toolWin,
 			   const std::string file, const std::string til):
-	LvlWindow_(lvlWin), TilWindow_(tilWin), ToolWindow_(toolWin),
-	lvl_filename_(file), til_filename_(til),
+	MapWindow_(mapWin), TilWindow_(tilWin), ToolWindow_(toolWin),
+	map_filename_(file), til_filename_(til),
 	currentLayer_(1), currentLive_(0), map_(file)
 {
-	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
+	MapWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
 	ToolWindow_->create( sf::VideoMode( 6*TILE_SIZE, TILE_SIZE ), "Tool", SF_STYLE );
-	LvlWindow_->setFramerateLimit( 60 );	
+	MapWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 	ToolWindow_->setFramerateLimit( 60 );
 
@@ -41,12 +41,12 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 		std::cerr << "Fail to load font" << std::endl ;
 	}
 
-	// test if the level file doesn't exist
+	// test if the map file doesn't exist
 	if ( (access( file.c_str(), R_OK|W_OK )) == -1)
 	{
 		// if so, we create it, empty
-		std::ofstream empty_level( file, std::ios::out) ;
-		if (empty_level)
+		std::ofstream empty_map( file, std::ios::out) ;
+		if (empty_map)
 		{
 			for (int l=0; l<=5; l++)
 			{
@@ -54,11 +54,11 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 				{
 					for (int x=0; x<nbTile_W-1; x++)
 					{
-						empty_level << "0," ;
+						empty_map << "0," ;
 					}
-					empty_level << "0" << std::endl ;
+					empty_map << "0" << std::endl ;
 				}
-				empty_level << std::endl ;
+				empty_map << std::endl ;
 			}
 		} else
 		{
@@ -71,16 +71,16 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 }
 
 
-LEWindow::~LEWindow(){}
+MEWindow::~MEWindow(){}
 
-std::string LEWindow::lvl_filename() const { return lvl_filename_ ; }
-std::string LEWindow::til_filename() const { return til_filename_ ; }
-int LEWindow::currentLayer() const { return currentLayer_ ; }
-int LEWindow::currentTile() const { return currentTile_ ; }
+std::string MEWindow::map_filename() const { return map_filename_ ; }
+std::string MEWindow::til_filename() const { return til_filename_ ; }
+int MEWindow::currentLayer() const { return currentLayer_ ; }
+int MEWindow::currentTile() const { return currentTile_ ; }
 
 
 
-void LEWindow::setCurrentLayer (int i)
+void MEWindow::setCurrentLayer (int i)
 {
 	if (i==1 || i==2 || i==3 || i==4 )
 	{
@@ -91,13 +91,13 @@ void LEWindow::setCurrentLayer (int i)
 		std::cout << "Bad value for layer (" << i << ")" << std::endl ;
 	}
 }
-void LEWindow::setCurrentTile (int i) { currentTile_ = i ;}
+void MEWindow::setCurrentTile (int i) { currentTile_ = i ;}
 
 
-void LEWindow::map_draw ()
+void MEWindow::map_draw ()
 {
 	for (int l=1; l<=4; l++)
-		map_.drawMap( l, *LvlWindow_ );
+		map_.drawMap( l, *MapWindow_ );
 	if ( currentLayer() == 4 )
 	{
 		char *intStr  ;
@@ -117,7 +117,7 @@ void LEWindow::map_draw ()
 						ss << life ;
 						text.setPosition( (float) x * TILE_SIZE_f , (float) y * TILE_SIZE_f );
 						text.setString( ss.str() );
-						LvlWindow_->draw( text );
+						MapWindow_->draw( text );
 					}
 				}
 			}
@@ -126,7 +126,7 @@ void LEWindow::map_draw ()
 }
 
 
-void LEWindow::image_draw() const
+void MEWindow::image_draw() const
 {
 	TilWindow_->draw( tileSprite_ );
 
@@ -140,7 +140,7 @@ void LEWindow::image_draw() const
 }
 
 
-void LEWindow::tool_draw() const
+void MEWindow::tool_draw() const
 {
 	ToolWindow_->draw( toolSprite_ );
 
@@ -167,10 +167,10 @@ void LEWindow::tool_draw() const
 
 
 
-void LEWindow::close_windows() const
+void MEWindow::close_windows() const
 {
-	if (LvlWindow_->isOpen())
-		LvlWindow_->close();
+	if (MapWindow_->isOpen())
+		MapWindow_->close();
 	if (TilWindow_->isOpen())
 		TilWindow_->close();
 	if (ToolWindow_->isOpen())
@@ -182,15 +182,15 @@ void LEWindow::close_windows() const
 
 
 
-void LEWindow::Run()
+void MEWindow::Run()
 {
-	while (LvlWindow_->isOpen())
+	while (MapWindow_->isOpen())
 	{
 		sf::Event event;
-		while (LvlWindow_->pollEvent( event ))
+		while (MapWindow_->pollEvent( event ))
 		{
 			seekKeyEvent( event );
-			seekLevelEvent( event );
+			seekMapEvent( event );
 		}
 		while (TilWindow_->pollEvent( event ))
 		{
@@ -204,7 +204,7 @@ void LEWindow::Run()
 		}
 		if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left) )
 		{
-			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
+			sf::Vector2i position =  sf::Mouse::getPosition( *MapWindow_ );
 			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, currentTile() );
 			if (currentLayer() == 4)
@@ -213,7 +213,7 @@ void LEWindow::Run()
 			}
 		} else if ( sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Right) )
 		{
-			sf::Vector2i position =  sf::Mouse::getPosition( *LvlWindow_ );
+			sf::Vector2i position =  sf::Mouse::getPosition( *MapWindow_ );
 			pair_t pair = PairFromPosition( position.x, position.y );
 			map_.changeTile( currentLayer(), pair, 0 );
 						if (currentLayer() == 4)
@@ -222,7 +222,7 @@ void LEWindow::Run()
 			}
 
 		}
-		LvlWindow_->clear( sf::Color::Black );
+		MapWindow_->clear( sf::Color::Black );
 		TilWindow_->clear( sf::Color::Black );
 		ToolWindow_->clear( sf::Color::Black );
 
@@ -230,7 +230,7 @@ void LEWindow::Run()
 		image_draw() ;
 		tool_draw() ;
 
-		LvlWindow_->display();
+		MapWindow_->display();
 		TilWindow_->display();
 		ToolWindow_->display();
 
@@ -245,7 +245,7 @@ void LEWindow::Run()
 
 
 
-void LEWindow::seekKeyEvent(sf::Event event)
+void MEWindow::seekKeyEvent(sf::Event event)
 {
 	if ( (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) 
 				|| (event.type == sf::Event::Closed) )
@@ -255,10 +255,10 @@ void LEWindow::seekKeyEvent(sf::Event event)
 		switch (event.key.code)
 		{
 			case sf::Keyboard::S :
-				map_.saveLevel( lvl_filename() );
+				map_.saveMap( map_filename() );
 				break ;
 			case sf::Keyboard::R :
-				map_.loadMap( lvl_filename() );
+				map_.loadMap( map_filename() );
 				break ;
 			case sf::Keyboard::F1 :
 				setCurrentLayer( 1 );
@@ -298,7 +298,7 @@ void LEWindow::seekKeyEvent(sf::Event event)
 
 
 
-void LEWindow::fillMap ()
+void MEWindow::fillMap ()
 {
 	pair_t pair;
 	for (int x=0; x<nbTile_W; x++)
@@ -316,7 +316,7 @@ void LEWindow::fillMap ()
 
 
 
-void LEWindow::seekLevelEvent( sf::Event event )
+void MEWindow::seekMapEvent( sf::Event event )
 {
 	pair_t pair = PairFromPosition( event.mouseButton.x, event.mouseButton.y );
 	if (event.type == sf::Event::MouseButtonPressed)
@@ -340,7 +340,7 @@ void LEWindow::seekLevelEvent( sf::Event event )
 }
 
 
-void LEWindow::seekTileEvent( sf::Event event )
+void MEWindow::seekTileEvent( sf::Event event )
 {
 	if (event.type == sf::Event::MouseButtonPressed)
 	{
@@ -355,7 +355,7 @@ void LEWindow::seekTileEvent( sf::Event event )
 }
 
 
-void LEWindow::seekToolEvent( sf::Event event )
+void MEWindow::seekToolEvent( sf::Event event )
 {
 	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
@@ -364,7 +364,7 @@ void LEWindow::seekToolEvent( sf::Event event )
 		{
 			if ( x <= OFFSET_X)
 			{
-				map_.saveLevel( lvl_filename() );
+				map_.saveMap( map_filename() );
 			} else if ( x >= OFFSET_X && x <= OFFSET_X + 4*TILE_SIZE)	// if we click on one of the four layer
 			{
 				int l_tmp = PairFromPosition( x - OFFSET_X, y - OFFSET_Y ).first;
@@ -385,7 +385,7 @@ void LEWindow::seekToolEvent( sf::Event event )
 
 
 
-pair_t LEWindow::PairFromPosition(int x, int y) const
+pair_t MEWindow::PairFromPosition(int x, int y) const
 {
 	pair_t indice ;
 	indice.first  = x / TILE_SIZE ;
@@ -394,14 +394,14 @@ pair_t LEWindow::PairFromPosition(int x, int y) const
 }
 
 
-int LEWindow::indiceFromPair( pair_t indice, bool tile ) const
+int MEWindow::indiceFromPair( pair_t indice, bool tile ) const
 {
 	int fact = (tile) ? nbTileT_W : nbTile_W ;
 	return indice.first + fact*indice.second ;
 }
 
 
-pair_t LEWindow::posCurrentTile(bool tile) const
+pair_t MEWindow::posCurrentTile(bool tile) const
 {
 	pair_t pair ;
 	pair.first  = (tile) ? currentTile()%nbTileT_W : currentTile()%nbTile_W ;

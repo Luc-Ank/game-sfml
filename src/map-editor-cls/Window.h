@@ -21,16 +21,16 @@
 
 using pair_t = std::pair<int,int>;
 
-class LEWindow
+class MEWindow
 {
 public:
 	// Constructor
-	LEWindow(sf::RenderWindow *, sf::RenderWindow *, sf::RenderWindow *,
+	MEWindow(sf::RenderWindow *, sf::RenderWindow *, sf::RenderWindow *,
 		   const std::string, const std::string);
-	~LEWindow();
+	~MEWindow();
 
 	// Accessors
-	std::string lvl_filename() const;
+	std::string map_filename() const;
 	std::string til_filename() const;
 	int currentLayer() const;
 	int currentTile() const;
@@ -53,7 +53,7 @@ public:
 	// 	window or not
 	void Run();
 	void seekKeyEvent(sf::Event) ;
-	void seekLevelEvent(sf::Event) ;
+	void seekMapEvent(sf::Event) ;
 	void seekTileEvent(sf::Event) ;
 	void seekToolEvent(sf::Event) ;
 	pair_t PairFromPosition(int, int) const ;
@@ -62,8 +62,8 @@ public:
 
 private:
 	int currentLayer_, currentTile_, currentLive_ ;
-	sf::RenderWindow *LvlWindow_, *TilWindow_, *ToolWindow_ ;
-	std::string lvl_filename_, til_filename_ ;
+	sf::RenderWindow *MapWindow_, *TilWindow_, *ToolWindow_ ;
+	std::string map_filename_, til_filename_ ;
 	sf::Texture tileTexture_ , toolTexture_ ;
 	sf::Sprite  tileSprite_  , toolSprite_ ;
 	sf::Font font_ ;

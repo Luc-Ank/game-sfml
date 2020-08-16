@@ -20,8 +20,7 @@ using namespace sf;
 
 Map::Map(std::string const Mapfilename) : mapFilename(Mapfilename)
 {
-    tilesFilename[0] = "Images/tileset1.png" ;
-    tilesFilename[1] = "Images/tileset2.png" ;
+    loadMap();
 
     if(!tileSetTexture1.loadFromFile( tilesFilename[0] ))
     {
@@ -91,7 +90,7 @@ void Map::setLifeTileBreak(int x,int y, int valeur)
     }
 }
 
-void Map::loadMap(std::string filename)
+void Map::loadMap()
 {
     std::fstream fin;
     int x = 0;
@@ -102,15 +101,31 @@ void Map::loadMap(std::string filename)
 
     std::stringstream iostr;
 
-    std::string strBuf,strTmp;
+    std::string strBuf,strTmp, strTst;
 
-    fin.open(filename,std::fstream::in);
+    fin.open(mapFilename,std::fstream::in);
     if(!fin.is_open())
     {
-        std::cout << "Erreur chargement du fichier " << filename << std::endl;
+        std::cerr << "Erreur chargement du fichier " << mapFilename << std::endl;
     }
 
     std::cout << "Remplissage vecteur Map" << std::endl;
+
+    // Check if the file is correct
+    getline( fin, strTst );
+    if ( strTst != "%MapFile" )
+    {
+        std::cerr << "Bad map file !" << std::endl ;
+        exit( 1 );
+    }
+
+    // Lecture des noms de fichiers TileSet
+    getline( fin, tilesFilename[0] );
+    getline( fin, tilesFilename[1] );
+
+    std::cout << tilesFilename[0] << ", " << tilesFilename[1] << std::endl ;
+
+    // Lecture du contenu de la Map
     while(!fin.eof())
     {
         getline(fin,strBuf);
@@ -305,61 +320,66 @@ void Map::drawMap(int layer, RenderWindow &window)
 
 void Map::changeLevel(std::string filename)
 {
-    loadMap(filename);
+    mapFilename = filename ;
+    loadMap();
 }
 
 
 
-void Map::saveMap(std::string const filename) const
+void Map::saveMap() const
 {
-    std::ofstream flux_level( filename, std::ios::out) ;
-    if (!flux_level)
+    std::ofstream flux_map( mapFilename, std::ios::out) ;
+    if (!flux_map)
     {
-        std::cerr << "Fail to create " << filename << std::endl ;
+        std::cerr << "Fail to create " << mapFilename << std::endl ;
         exit( 1 );
     } else
     {
+        flux_map << "%MapFile" << std::endl ;
+        for (int i=0; i<2; i++) flux_map << tilesFilename[i] << std::endl ;
+        flux_map << std::endl ;
+
         for (int y=0; y<nbTile_H; y++){
             for (int x=0; x<nbTile_W-1; x++)
             {
-                flux_level << tile1[y][x] << "," ;
+                flux_map << tile1[y][x] << "," ;
             }
-            flux_level << tile1[y][nbTile_W-1] << std::endl ;
+            flux_map << tile1[y][nbTile_W-1] << std::endl ;
         }
-        flux_level << std::endl ;
+        flux_map << std::endl ;
         for (int y=0; y<nbTile_H; y++){
             for (int x=0; x<nbTile_W-1; x++)
             {
-                flux_level << tile2[y][x] << "," ;
+                flux_map << tile2[y][x] << "," ;
             }
-            flux_level << tile2[y][nbTile_W-1] << std::endl ;
+            flux_map << tile2[y][nbTile_W-1] << std::endl ;
         }
-        flux_level << std::endl ;
+        flux_map << std::endl ;
         for (int y=0; y<nbTile_H; y++){
             for (int x=0; x<nbTile_W-1; x++)
             {
-                flux_level << tile3[y][x] << "," ;
+                flux_map << tile3[y][x] << "," ;
             }
-            flux_level << tile3[y][nbTile_W-1] << std::endl ;
+            flux_map << tile3[y][nbTile_W-1] << std::endl ;
         }
-        flux_level << std::endl ;
+        flux_map << std::endl ;
         for (int y=0; y<nbTile_H; y++){
             for (int x=0; x<nbTile_W-1; x++)
             {
-                flux_level << tile4[y][x] << "," ;
+                flux_map << tile4[y][x] << "," ;
             }
-            flux_level << tile4[y][nbTile_W-1] << std::endl ;
+            flux_map << tile4[y][nbTile_W-1] << std::endl ;
         }
-        flux_level << std::endl ;
+        flux_map << std::endl ;
         for (int y=0; y<nbTile_H; y++){
             for (int x=0; x<nbTile_W-1; x++)
             {
-                flux_level << lifeTile4[y][x] << "," ;
+                flux_map << lifeTile4[y][x] << "," ;
             }
-            flux_level << lifeTile4[y][nbTile_W-1] << std::endl ;
+            flux_map << lifeTile4[y][nbTile_W-1] << std::endl ;
         }
-        flux_level << std::endl ;
-        std::cout << "Level saved in " << filename << std::endl ;
+        flux_map << std::endl ;
+        std::cout << "Level saved in " << mapFilename << std::endl ;
     }
 }
 

@@ -9,7 +9,7 @@
 MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::RenderWindow *toolWin,
 			   const std::string file, const std::string til):
 	MapWindow_(mapWin), TilWindow_(tilWin), ToolWindow_(toolWin),
-	map_filename_(file), til_filename_(til),
+	til_filename_(til),
 	currentLayer_(1), currentLive_(0), map_(file)
 {
 	MapWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
@@ -48,6 +48,13 @@ MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::Rende
 		std::ofstream empty_map( file, std::ios::out) ;
 		if (empty_map)
 		{
+			empty_map << "%MapFile" << std::endl ;
+			empty_map << til << std::endl ;
+			empty_map << til << std::endl ;
+			#warning Change it !
+			std::cout << "Warning : if the seconde tile set is different from the first, correct if mannualy in the map_file" << std::endl ;
+			empty_map << std::endl ;
+
 			for (int l=0; l<=5; l++)
 			{
 				for (int y=0; y<nbTile_H; y++)
@@ -67,13 +74,12 @@ MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::Rende
 		}
 	}
 
-	map_.loadMap( file );
+	map_.loadMap();
 }
 
 
 MEWindow::~MEWindow(){}
 
-std::string MEWindow::map_filename() const { return map_filename_ ; }
 std::string MEWindow::til_filename() const { return til_filename_ ; }
 int MEWindow::currentLayer() const { return currentLayer_ ; }
 int MEWindow::currentTile() const { return currentTile_ ; }
@@ -255,10 +261,10 @@ void MEWindow::seekKeyEvent(sf::Event event)
 		switch (event.key.code)
 		{
 			case sf::Keyboard::S :
-				map_.saveMap( map_filename() );
+				map_.saveMap();
 				break ;
 			case sf::Keyboard::R :
-				map_.loadMap( map_filename() );
+				map_.loadMap();
 				break ;
 			case sf::Keyboard::F1 :
 				setCurrentLayer( 1 );
@@ -273,7 +279,7 @@ void MEWindow::seekKeyEvent(sf::Event event)
 				setCurrentLayer( 4 );
 				break ;
 			case sf::Keyboard::F :
-				fillMap( );
+				fillMap();
 				break ;
 			case sf::Keyboard::A :
 				if (currentLive_ > 0)
@@ -364,7 +370,7 @@ void MEWindow::seekToolEvent( sf::Event event )
 		{
 			if ( x <= OFFSET_X)
 			{
-				map_.saveMap( map_filename() );
+				map_.saveMap();
 			} else if ( x >= OFFSET_X && x <= OFFSET_X + 4*TILE_SIZE)	// if we click on one of the four layer
 			{
 				int l_tmp = PairFromPosition( x - OFFSET_X, y - OFFSET_Y ).first;

@@ -30,7 +30,6 @@ public:
 	~MEWindow();
 
 	// Accessors
-	std::string map_filename() const;
 	std::string til_filename() const;
 	int currentLayer() const;
 	int currentTile() const;
@@ -63,7 +62,7 @@ public:
 private:
 	int currentLayer_, currentTile_, currentLive_ ;
 	sf::RenderWindow *MapWindow_, *TilWindow_, *ToolWindow_ ;
-	std::string map_filename_, til_filename_ ;
+	std::string til_filename_ ;
 	sf::Texture tileTexture_ , toolTexture_ ;
 	sf::Sprite  tileSprite_  , toolSprite_ ;
 	sf::Font font_ ;

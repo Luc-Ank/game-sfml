@@ -18,19 +18,22 @@ using namespace sf;
 #define Tile_Size 32
 
 
-Map::Map()
+Map::Map(std::string const Mapfilename) : mapFilename(Mapfilename)
 {
-    if(!tileSetTexture1.loadFromFile("Images/tileset1.png"))
+    tilesFilename[0] = "Images/tileset1.png" ;
+    tilesFilename[1] = "Images/tileset2.png" ;
+
+    if(!tileSetTexture1.loadFromFile( tilesFilename[0] ))
     {
-        std::cout << "Err chargement de l'image du tilset 1" << std::endl;
+        std::cerr << "Err chargement de l'image du tilset 1" << std::endl;
     }
     else
     {
         tileSet1.setTexture(tileSetTexture1);
     }
-    if(!tileSetTexture2.loadFromFile("Images/tileset2.png"))
+    if(!tileSetTexture2.loadFromFile( tilesFilename[1] ))
     {
-        std::cout << "Err chargement de l'image du tilset 2" << std::endl;
+        std::cerr << "Err chargement de l'image du tilset 2" << std::endl;
     }
     else
     {

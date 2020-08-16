@@ -10,7 +10,7 @@ LEWindow::LEWindow(sf::RenderWindow *lvlWin, sf::RenderWindow *tilWin, sf::Rende
 			   const std::string file, const std::string til):
 	LvlWindow_(lvlWin), TilWindow_(tilWin), ToolWindow_(toolWin),
 	lvl_filename_(file), til_filename_(til),
-	currentLayer_(1), currentLive_(0)
+	currentLayer_(1), currentLive_(0), map_(file)
 {
 	LvlWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );

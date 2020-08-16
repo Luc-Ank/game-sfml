@@ -21,7 +21,7 @@ using namespace sf;
 class Map
 {
     public:
-        Map();
+        Map(std::string const filename);
 
         void loadMap(std::string filename);
         void drawMap(int layer, RenderWindow &window);
@@ -47,6 +47,9 @@ class Map
         int tile3[nbTile_H][nbTile_W];
         int tile4[nbTile_H][nbTile_W];
         int lifeTile4[nbTile_H][nbTile_W];
+
+        std::string mapFilename ;
+        std::string tilesFilename[2];
 
         int tileIsGettingDamage;
 

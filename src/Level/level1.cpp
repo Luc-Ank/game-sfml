@@ -36,9 +36,7 @@ void level1::setMonster()
 
 void level1::setTexture()
 {
-	std::string filename;
-	filename = "Map/map1.txt";
-	map.changeLevel(filename);
+	map.changeLevel(map_filename);
 }
 
 void level1::draw()

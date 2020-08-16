@@ -19,7 +19,7 @@ int main()
     window.create(VideoMode(screen_W,screen_H),"SFML works"); //Style::Fullscreen  no
 	window.setFramerateLimit(60);
 
-    level1 level(&window);
+    level1 level(&window, "Map/map1.txt");
     std::cout << " Fenetre crée " << std::endl;
 
     level.setForm();

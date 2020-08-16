@@ -15,7 +15,7 @@ test.o: test.cpp Level/level1.o
 	$(CC) $(CFLAGS) test.cpp
 
 clean:
-	rm *.o game-sfml
+	rm -r *.o game-sfml
 
 map-editor: map-editor.o map-editor-cls/Window.o Map/map.o
 	$(CC) $(DEBUG) map-editor.o map-editor-cls/Window.o Map/map.o -o map-editor $(SFML)

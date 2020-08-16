@@ -18,8 +18,8 @@ using namespace sf;
 class level1
 {
 public:
-    level1(RenderWindow *Mwindow): 
-        window(Mwindow){}
+    level1(RenderWindow *Mwindow, std::string map_file): 
+        window(Mwindow), map_filename(map_file), map(map_file) {}
 
     void setForm();
     void setTexture();
@@ -48,6 +48,7 @@ protected:
     Vector2i anim;
 
     Map map;
+    std::string map_filename ;
     Player player;
     Monster monster[4];
 };

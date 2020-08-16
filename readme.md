@@ -1,36 +1,44 @@
 # Game SFMF
 
+## The game
+
 To run the game(beta): use the commande "make" in the root folder to build. 
 
 To play, just type ./game-sfml in src folder
 
 
-What you can do :
+### What you can do 
 
 
-Move, Collide to monster, Collide to wall in the middle, Collide to dirt tile, Collide to the edge of the map, switch weapon, run, attack monster AND dirt tile with each weapon(and without weapon), kill monster. 
+- Move
+- Collide to monster
+- Collide to wall in the middle
+- Collide to dirt tile
+- Collide to the edge of the map
+- Switch weapon
+- Run 
+- Attack monster and dirt tile with each weapon(and without weapon)
+- kill monster
+- Get hit by a monster
+- Die 
 
 
-Keybind :
+### Keybinds
 
 
-Move up : Up arrow 
+- Move up : Up arrow 
+- Move down : Down arrow
+- Move left : Left arrow
+- Move right : Right arrow
+- Run : x
+- Switch weapon to dagger/back to no weapon : h
+- Switch weapon to spear/back to no weapon : g
+- Attack : v 
 
-Move down : Down arrow
-
-Move left : Left arrow
-
-Move right : Right arrow
-
-Run : x
-
-Switch weapon to dagger/back to no weapon : h
-
-Switch weapon to spear/back to no weapon : g
-
-Attack : v 
+### Latest changes
 
 
+Now monsters can attack, and they can kill you.
 
 
 ## Level editor

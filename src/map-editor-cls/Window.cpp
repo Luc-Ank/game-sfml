@@ -7,10 +7,10 @@
 
 
 MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::RenderWindow *toolWin,
-			   const std::string file, const std::string til):
+			   const std::string file, const std::string til1, const std::string til2):
 	MapWindow_(mapWin), TilWindow_(tilWin), ToolWindow_(toolWin),
-	til_filename_(til),
-	currentLayer_(1), currentLive_(0), map_(file)
+	// til_filename_(til1),
+	currentLayer_(1), currentLive_(0), map_(file, til1, til2)
 {
 	MapWindow_->create( sf::VideoMode(LVL_W, LVL_H), "Map editor", SF_STYLE );
 	TilWindow_->create( sf::VideoMode(TILE_W, TILE_H), "Tile selector", SF_STYLE );
@@ -18,6 +18,8 @@ MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::Rende
 	MapWindow_->setFramerateLimit( 60 );	
 	TilWindow_->setFramerateLimit( 60 );
 	ToolWindow_->setFramerateLimit( 60 );
+
+	til_filename_ = map_.getTileSetName() ;
 
 
 	if (!tileTexture_.loadFromFile( til_filename() ))
@@ -41,40 +43,7 @@ MEWindow::MEWindow(sf::RenderWindow *mapWin, sf::RenderWindow *tilWin, sf::Rende
 		std::cerr << "Fail to load font" << std::endl ;
 	}
 
-	// test if the map file doesn't exist
-	if ( (access( file.c_str(), R_OK|W_OK )) == -1)
-	{
-		// if so, we create it, empty
-		std::ofstream empty_map( file, std::ios::out) ;
-		if (empty_map)
-		{
-			empty_map << "%MapFile" << std::endl ;
-			empty_map << til << std::endl ;
-			empty_map << til << std::endl ;
-			#warning Change it !
-			std::cout << "Warning : if the seconde tile set is different from the first, correct if mannualy in the map_file" << std::endl ;
-			empty_map << std::endl ;
-
-			for (int l=0; l<=5; l++)
-			{
-				for (int y=0; y<nbTile_H; y++)
-				{
-					for (int x=0; x<nbTile_W-1; x++)
-					{
-						empty_map << "0," ;
-					}
-					empty_map << "0" << std::endl ;
-				}
-				empty_map << std::endl ;
-			}
-		} else
-		{
-			std::cerr << "Fail to open " << file << std::endl ;
-			exit( 0 );
-		}
-	}
-
-	map_.loadMap();
+	// map_.loadMap();
 }
 
 

@@ -20,6 +20,59 @@ using namespace sf;
 
 Map::Map(std::string const Mapfilename) : mapFilename(Mapfilename)
 {
+    initialize();
+}
+
+
+
+
+Map::Map(std::string const Mapfilename, std::string const tile1, std::string const tile2) :
+    mapFilename(Mapfilename)
+{
+    // test if the map file doesn't exist
+    if ( (access( mapFilename.c_str(), R_OK|W_OK )) == -1)
+    {
+        // if so, we create it, empty
+        std::ofstream empty_map( mapFilename, std::ios::out) ;
+        if (empty_map)
+        {
+            empty_map << "%MapFile" << std::endl ;
+            empty_map << tile1 << std::endl ;
+            empty_map << tile2 << std::endl ;
+            empty_map << std::endl ;
+
+            for (int l=0; l<=5; l++)
+            {
+                for (int y=0; y<nbTile_H; y++)
+                {
+                    for (int x=0; x<nbTile_W-1; x++)
+                    {
+                        empty_map << "0," ;
+                    }
+                    empty_map << "0" << std::endl ;
+                }
+                empty_map << std::endl ;
+            }
+        } else
+        {
+            std::cerr << "Fail to open " << mapFilename << std::endl ;
+            exit( 0 );
+        }
+    }
+    initialize();
+
+    if (tile1 != "")
+    {
+        tilesFilename[0] = tile1 ;
+        tilesFilename[1] = tile2 ;
+    }
+}
+
+
+
+
+void Map::initialize()
+{
     loadMap();
 
     if(!tileSetTexture1.loadFromFile( tilesFilename[0] ))
@@ -45,10 +98,12 @@ Map::Map(std::string const Mapfilename) : mapFilename(Mapfilename)
 }
 
 
+
 int Map::getTileCollision(int x,int y) const { return tile3[x][y]; }
 int Map::getTileBreak(int x,int y) const { return tile4[x][y]; }
 int Map::getLifeTileBreak(int x,int y) const { return lifeTile4[x][y]; }
 int Map::getTileIsGettingDamage(void) const { return tileIsGettingDamage; }
+std::string Map::getTileSetName() const { return tilesFilename[0]; }
 
 void Map::setTileIsGettingDamage(int valeur) { tileIsGettingDamage = valeur; }
 

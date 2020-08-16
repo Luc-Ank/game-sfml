@@ -37,11 +37,19 @@ Attack : v
 
 ### Usage
 
-```map-editor map-filename tile-file```
+```map-editor map-filename [tile-file1 tile-file2]```
 
 where :
 - `map-filename` is the path the the text file containing the layers of the map (if such a file doesn't exist, it is created)
-- `tile-file` is the path to the tile set file. The tiles of this fils have to be 32x32 px, and be organised by lines of 10
+- `tile-file1` is the path to the tile set file. The tiles of this fils have to be 32x32 px, and be organised by lines of 10
+- `tilefile2` is the path to the second tile set file.
+
+
+_About optionnal arguments_
+- If `map-filename` doesn't exists, at least the first argument is required (is the second is absent, it will be set as the first one)
+- If `map-filename` exists, this will change the tiles set parameters of the map (with the same logic as above if only `tile-file1` is given)
+
+*Note :* when you modify the values of the tiles set, a reload of the applicaiton may be neccessary 
 
 
 ### Keys

@@ -26,7 +26,7 @@ class MEWindow
 public:
 	// Constructor
 	MEWindow(sf::RenderWindow *, sf::RenderWindow *, sf::RenderWindow *,
-		   const std::string, const std::string);
+		   const std::string, const std::string, const std::string);
 	~MEWindow();
 
 	// Accessors

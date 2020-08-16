@@ -22,8 +22,10 @@ class Map
 {
     public:
         Map(std::string const filename);
+        Map(std::string const filename, std::string const tile1, std::string const tile2);
 
         void loadMap();
+        void initialize();
         void drawMap(int layer, RenderWindow &window);
         void changeLevel(std::string filename);
         void saveMap() const;
@@ -32,6 +34,7 @@ class Map
         int getTileCollision(int x,int y) const;
         Sprite getSprite(int x, int y) const;
         Sprite getSpriteBreak(int x, int y) const;
+        std::string getTileSetName() const;
 
         int getTileBreak(int x,int y) const;
         int getLifeTileBreak(int x,int y) const;

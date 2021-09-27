@@ -7,6 +7,7 @@ Input::Input()
 {
     button.left = button.right = button.up = button.down = button.run = button.attack = false;
     button.enter = button.protect = button.switchDagger = button.switchSpear = false;
+    button.spell = false;
 }
 
 Input::Button Input::getButton(void) const {return button;}
@@ -44,6 +45,9 @@ void Input::setButton(int bouton, bool etat)
             break;
         case switchSpear:
             button.switchSpear = etat;
+            break;
+        case spell:
+            button.spell = etat;
             break;
     }
 }
@@ -96,6 +100,9 @@ void Input::getInput(RenderWindow &window)
                     case Keyboard::H:
                         button.switchDagger = true;
                         break;
+                    case Keyboard::T:
+                        button.spell = true;
+                        break;
                     default:
                         break;
                 }
@@ -132,6 +139,9 @@ void Input::getInput(RenderWindow &window)
                         break; 
                     case Keyboard::H:
                         button.switchDagger = false;
+                        break;
+                    case Keyboard::T:
+                        button.spell = false;
                         break;
                     default:
                         break;  

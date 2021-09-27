@@ -12,6 +12,7 @@
 #include "../Monster/monster.hpp"
 #include "../Map/map.hpp"
 #include "../Input/input.hpp"
+#include "../Spell/spell.hpp"
 
 using namespace sf;
 
@@ -25,6 +26,7 @@ public:
     void setTexture();
     void setCaracter();
     void setMonster();
+    void setSpell();
     void draw();
     void run_event(Input &input);
 
@@ -50,5 +52,6 @@ protected:
     Map map;
     Player player;
     Monster monster[5];
+    Spell spell;
 };
 #endif

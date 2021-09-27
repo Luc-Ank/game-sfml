@@ -27,6 +27,7 @@ int main()
 
     level.setCaracter();
     level.setMonster();
+    level.setSpell();
     level.setTexture();
 
     while(window.isOpen())

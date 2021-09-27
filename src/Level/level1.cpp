@@ -35,6 +35,10 @@ void level1::setMonster()
 	monster[4].initMonster(64,512);
 }
 
+void level1::setSpell()
+{
+	spell.initSpell();
+}
 void level1::setTexture()
 {
 	std::string filename;
@@ -57,6 +61,7 @@ void level1::draw()
 	monster[4].drawMonster(*window);
 	//window->draw(cercle);
 	//window->draw(rectangle);
+	spell.drawSpell(*window);
 	window->draw(sprite_perso);
 }
 
@@ -64,7 +69,8 @@ void level1::run_event(Input &input)
 {
 	int monsterNumber = 5;
 	input.gestionInputs(*window);
-	player.updatePlayer(input, map,monster,monsterNumber);
+	player.updatePlayer(input, map,monster,monsterNumber, spell);
+	spell.updateSpell();
 	monster[0].updateMonster("nul",map,monster,monsterNumber,0,player.getPlayerSprite());
 	if (i==0)
 	{

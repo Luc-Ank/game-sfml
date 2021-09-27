@@ -59,6 +59,8 @@ Player::Player()
     ghostPlayerX = 0;
     ghostPlayerY = 0;
     playerLife = 100;
+    playerMana = 100;
+    playerManaMax = 100;
     playerLifeMax = 100;
     invincibleTimer = 0;
     playerX = 0;
@@ -78,6 +80,9 @@ Player::Player()
 }
 
 Sprite Player::getPlayerSprite(void) const { return playerSprite; }
+int Player::getPlayerX(void) const {return playerX;}
+int Player::getPlayerY(void) const {return playerY;}
+int Player::getPlayerDirection(void) const {return playerDirection;}
 
 void Player::drawPlayer(RenderWindow &window)
 {
@@ -116,8 +121,8 @@ void Player::drawPlayer(RenderWindow &window)
         shape.setOutlineColor(Color(250,0,0));
         window.draw(shape);
 
-        RectangleShape playerLifeBar(Vector2f(PLAYERW,8));//playerLifeBar
-        RectangleShape playerLifeBarInside(Vector2f(PLAYERW*(float(playerLife)/playerLifeMax),8));
+        RectangleShape playerLifeBar(Vector2f(PLAYERW,4));//playerLifeBar
+        RectangleShape playerLifeBarInside(Vector2f(PLAYERW*(float(playerLife)/playerLifeMax),4));
         playerLifeBarInside.setFillColor(Color::Red);
         playerLifeBarInside.setPosition(playerX,playerY);
         playerLifeBar.setFillColor(Color::Transparent);
@@ -126,6 +131,17 @@ void Player::drawPlayer(RenderWindow &window)
         playerLifeBar.setOutlineColor(Color(0,0,0));
         window.draw(playerLifeBar);
         window.draw(playerLifeBarInside);
+
+        RectangleShape playerManaBar(Vector2f(PLAYERW,4));//playerManaBar
+        RectangleShape playerManaBarInside(Vector2f(PLAYERW*(float(playerMana)/playerManaMax),4));
+        playerManaBarInside.setFillColor(Color::Blue);
+        playerManaBarInside.setPosition(playerX,playerY+8);
+        playerManaBar.setFillColor(Color::Transparent);
+        playerManaBar.setPosition(playerX,playerY+8);
+        playerManaBar.setOutlineThickness(2);
+        playerManaBar.setOutlineColor(Color(0,0,0));
+        window.draw(playerManaBar);
+        window.draw(playerManaBarInside);
     }
     else
     {
@@ -157,6 +173,8 @@ void Player::initPlayer()
 {
     playerLife = 100;
     playerLifeMax = 100;
+    playerMana = 100;
+    playerManaMax = 100;
     invincibleTimer = 0;
 
     playerDirection = playerDOWN;
@@ -180,11 +198,12 @@ void Player::initPlayer()
     playerCollision = 0;
     playerDeathTimer = 0;
     playerIsAttacking = 0;
+    spellWaitTimer = 0;
 
     playerSprite.setTexture(playerTexture);
 }
 
-void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber)
+void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber, Spell &spell)
 {
     for (int i = 0; i < monsterNumber; i++)
     {
@@ -373,9 +392,27 @@ void Player::updatePlayer(Input &input, Map &map, Monster monster[], int monster
                 }
                 
             }
+            if (input.getButton().spell == true)
+            {
+                if (playerMana - 6 >= 0)
+                {
+                    if (spellWaitTimer == 0)
+                    {
+                        std::cout << "spell add" << std::endl;
+                        spell.addSpell(playerX, playerY, playerDirection);
+                        spellWaitTimer = 1;
+                        playerMana -= 5;
+                    }
+                }
+            }
+            else
+            {
+                spellWaitTimer = 0;
+            }
             //
             playerMapCollision(map);
             playerMonsterCollision(monster, input, monsterNumber);
+            spell.spellMonsterCollision(monster,monsterNumber);
             //playerCenterScrolling(map);
         }
     }
@@ -405,191 +442,6 @@ void Player::playerCenterScrolling(Map & map)
     int ylimmax = screen_H;
 
 }
-
-/*void Player::playerMapCollision(Map & map)
-{
-    int i,x1,x2,y1,y2;
-
-    if(playerH > Tile_Size)
-    {
-        i = Tile_Size;
-    }
-    else
-    {
-        i = playerH;
-    }
-    
-    for(;;)
-    {
-        x1 = (playerX + ghostPlayerX)/Tile_Size ;
-        x2 = (playerX + ghostPlayerX + playerW - 1)/Tile_Size ;
-
-        y1 = (playerY)/Tile_Size ;
-        y2 = (playerY + i - 1)/Tile_Size ;   
-
-        if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
-        {
-            if(ghostPlayerX > 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x2) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
-                {
-                    playerX = x2*Tile_Size;
-                    playerX -= (playerW+1);
-                    ghostPlayerX = 0;
-                }
-                else if (map.getTileBreak(y2,x2) == breakMUR1 || map.getTileBreak(y2,x2) == breakMUR2)
-                {
-                    playerX = x2*Tile_Size;
-                    playerX -= (playerW+1);
-                    ghostPlayerX = 0;
-                    map.setLifeTileBreak(y2,x2, map.getLifeTileBreak(y2,x2)-1 );
-                }
-                else if (map.getTileBreak(y1,x2) == breakMUR2 || map.getTileBreak(y1,x2) == breakMUR2)
-                {
-                    playerX = x2*Tile_Size;
-                    playerX -= (playerW+1);
-                    ghostPlayerX = 0;
-                    map.setLifeTileBreak(y1,x2, map.getLifeTileBreak(y1,x2)-1 );                    
-                }
-            }
-            else if(ghostPlayerX < 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y2,x1) == MUR1)
-                {
-                    playerX = (x1+1)*Tile_Size;
-                    ghostPlayerX = 0;
-                }
-                else if (map.getTileBreak(y1,x1) == breakMUR1 || map.getTileBreak(y1,x1) == breakMUR2)
-                {
-                    playerX = (x1+1)*Tile_Size;
-                    ghostPlayerX = 0;
-                    map.setLifeTileBreak(y1,x1, map.getLifeTileBreak(y1,x1)-1 );   
-                }
-                else if (map.getTileBreak(y2,x1) == breakMUR1 || map.getTileBreak(y2,x1) == breakMUR2)
-                {
-                    playerX = (x1+1)*Tile_Size;
-                    ghostPlayerX = 0;
-                    map.setLifeTileBreak(y2,x1, map.getLifeTileBreak(y2,x1)-1 );   
-                }
-            }            
-        }
-        
-        if(i==playerH)
-        {
-            break;
-        }
-        i += Tile_Size;
-
-        if(i>playerH)
-        {
-            i = playerH;
-        }    
-    }
-
-    if(playerW > Tile_Size)
-    {
-        i = Tile_Size;
-    }
-    else
-    {
-        i = playerW;
-    }  
-    for(;;)
-    {
-        x1 = playerX/Tile_Size ;
-        x2 = (playerX + i)/Tile_Size ;
-
-        y1 = (playerY + ghostPlayerY)/Tile_Size ;
-        y2 = (playerY + ghostPlayerY + playerH)/Tile_Size ;   
-
-        if(x1 >= 0 && x2 < screen_W && y1 >= 0 && y2 < screen_H)
-        {
-            if(ghostPlayerY > 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y2,x1) == MUR1 || map.getTileCollision(y2,x2) == MUR1)
-                {
-                    playerY = y2*Tile_Size;
-                    playerY -= (playerH+1);
-                    ghostPlayerY = 0;
-                }
-                else if(map.getTileBreak(y2,x1) == breakMUR1 || map.getTileBreak(y2,x1) == breakMUR2)
-                {
-                    playerY = y2*Tile_Size;
-                    playerY -= (playerH+1);
-                    ghostPlayerY = 0;
-                    map.setLifeTileBreak(y2,x1, map.getLifeTileBreak(y2,x1)-1 );
-                }
-                else if(map.getTileBreak(y2,x2) == breakMUR1 || map.getTileBreak(y2,x2) == breakMUR2)
-                {
-                    playerY = y2*Tile_Size;
-                    playerY -= (playerH+1);
-                    ghostPlayerY = 0;
-                    map.setLifeTileBreak(y2,x2, map.getLifeTileBreak(y2,x2)-1 );
-                }
-            }
-            else if(ghostPlayerY < 0)
-            {
-                //verifier ici si on collision map
-                //si ok alors
-                if(map.getTileCollision(y1,x1) == MUR1 || map.getTileCollision(y1,x2) == MUR1)
-                {
-                    playerY = (y1+1)*Tile_Size;
-                    ghostPlayerY = 0;
-                }
-                else if(map.getTileBreak(y1,x1) == breakMUR1 || map.getTileBreak(y1,x1) == breakMUR2)
-                {
-                    playerY = (y1+1)*Tile_Size;
-                    ghostPlayerY = 0;
-                    map.setLifeTileBreak(y1,x1, map.getLifeTileBreak(y1,x1)-1 );
-                }
-                else if(map.getTileBreak(y1,x2) == breakMUR1 || map.getTileBreak(y1,x2) == breakMUR2)
-                {
-                    playerY = (y1+1)*Tile_Size;
-                    ghostPlayerY = 0;
-                    map.setLifeTileBreak(y1,x2, map.getLifeTileBreak(y1,x2)-1 );
-                }
-            }            
-        }
-        if(i==playerW)
-        {
-            break;
-        }
-        i += Tile_Size;
-
-        if(i>playerW)
-        {
-            i = playerW;
-        }    
-    }
-
-    prevPlayerX = playerX;
-    prevPlayerY = playerY;
-    playerX += ghostPlayerX;
-    playerY += ghostPlayerY;
-
-    if(playerX < 0)
-    {
-        playerX = 0;
-    }
-    else if (playerX + playerW > screen_W)
-    {
-        playerX = screen_W - playerW;
-    }
-    else if(playerY < 0)
-    {
-        playerY = 0;
-    }
-    else if (playerY + playerH > screen_H)
-    {
-        playerY = screen_H - playerH;
-    }    
-}*/
 
 
 void Player::playerMapCollision(Map & map)

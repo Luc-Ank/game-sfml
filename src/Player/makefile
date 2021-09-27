@@ -6,7 +6,7 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: player.o
 
-player.o: player.cpp player.hpp ../Input/input.o ../Monster/monster.o ../Map/map.o
+player.o: player.cpp player.hpp ../Spell/spell.o ../Input/input.o ../Monster/monster.o ../Map/map.o
 	$(CC) -shared $(CFLAGS) $(THREAD)  player.cpp  $(SFML)
 
 clean:

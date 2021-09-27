@@ -35,7 +35,7 @@ SFML = -lsfml-graphics -lsfml-window -lsfml-system
 # 	./game-sfml
 
 
-DIRS = src/Collision src/Map src/Input src/Monster src/Player src/Level src/map-editor-cls src
+DIRS = src/Collision src/Map src/Input src/Monster src/Spell src/Player src/Level src/map-editor-cls src
 BUILDDIRS = $(DIRS:%=build-%)
 CLEANDIR = $(DIRS:%=clean-%)
 

@@ -14,6 +14,7 @@
 #include "../Input/input.hpp"
 #include "../Map/map.hpp"
 #include "../Monster/monster.hpp"
+#include "../Spell/spell.hpp"
 
 using namespace sf;
 
@@ -29,16 +30,20 @@ class Player
 
         void drawPlayer(RenderWindow &window);
         void initPlayer(); 
-        void updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber);
+        void updatePlayer(Input &input, Map &map, Monster monster[], int monsterNumber, Spell &spell);
         void playerCenterScrolling(Map &map);
         void playerMapCollision(Map &map);
         void playerMonsterCollision(Monster monster[], Input input, int monsterNumber);
         void playerAttackTile(Map &map, int tiledmg);
 
         Sprite getPlayerSprite(void) const;
+        int getPlayerX(void) const;
+        int getPlayerY(void) const;
+        int getPlayerDirection(void) const;
 
     protected:
         int playerLife,playerLifeMax;
+        int playerMana, playerManaMax;
         int invincibleTimer;
 
         int playerX,playerY;
@@ -66,6 +71,8 @@ class Player
         int changeSpearState,changeDaggerState;
         int swordX,wordY,swordTimer,swordRotation;
         int shieldX,shieldY,shieldTimer,shieldRotation;
+
+        int spellWaitTimer;
 
         int startPlayerState;
         

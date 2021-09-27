@@ -9,7 +9,7 @@ debug: DEBUG += -g -fsanitize=address
 debug: all
 
 game-sfml: test.o Level/level1.o 
-	$(CC) test.o Map/map.o Level/level1.o Input/input.o Player/player.o Monster/monster.o Collision/collision.o -o game-sfml $(SFML)
+	$(CC) test.o Map/map.o Level/level1.o Input/input.o Spell/spell.o Player/player.o Monster/monster.o Collision/collision.o -o game-sfml $(SFML)
 
 test.o: test.cpp Level/level1.o 
 	$(CC) $(CFLAGS) test.cpp
